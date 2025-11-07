@@ -31,17 +31,17 @@ function renderGrid() {
              class="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-gray-600" />
         <div class="flex-1 min-w-0">
           <div class="font-semibold text-gray-900 dark:text-white truncate">${c.fullName || (c.firstName + ' ' + c.lastName)}</div>
-          <div class="text-xs text-gray-500 truncate">\</div>
+          <div class="text-xs text-gray-500 truncate">${c.phone || t('no_phone')}</div>
           <div class="text-xs mt-1">
             <span class="px-2 py-1 rounded-full ${c.balance >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}">
-              : 
+              ${t('balance_word')}: ${formatCurrency(c.balance)}
             </span>
           </div>
         </div>
       </div>
       <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
         <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-          \
+          ${c.category || t('category_customer')}
         </span>
         <div class="flex items-center gap-2">
           ${canEdit() ? `
@@ -58,13 +58,13 @@ function renderGrid() {
     card.querySelector('[data-open]').addEventListener('click', () => openCustomer(c));
     const delBtn = card.querySelector('[data-del]');
     if (delBtn) delBtn.addEventListener('click', async () => {
-      if (!(await confirmModal(''))) return;
+      if (!(await confirmModal(t('confirm_delete_customer') || 'Are you sure you want to delete this customer?'))) return;
       try {
         await api.del(`/api/customers/${c._id}`);
-        showToast('', 'success');
+        showToast(t('customer_deleted_success') || 'Customer deleted successfully', 'success');
         await load();
       } catch (error) {
-        showToast('', 'error');
+        showToast(t('failed_delete_customer') || 'Failed to delete customer', 'error');
       }
     });
     grid.appendChild(card);
@@ -81,8 +81,8 @@ async function loadTx(customerId) {
     state.tx = data.items;
     renderTx();
   } catch (error) {
-    console.error(':', error);
-    showToast('', 'error');
+    console.error('Failed to load transactions:', error);
+    showToast(t('failed_load_tx') || 'Failed to load transactions', 'error');
   }
 }
 
@@ -95,7 +95,7 @@ function renderTx() {
     tr.innerHTML = `
       <td colspan="6" class="py-8 text-center text-gray-500 dark:text-gray-400">
         <i class="fas fa-receipt text-3xl mb-2 opacity-50"></i>
-        <div></div>
+        <div>${t('no_transactions') || 'No transactions found'}</div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -135,14 +135,14 @@ function renderTx() {
     `;
     const btn = tr.querySelector('[data-del]');
     if (btn) btn.addEventListener('click', async () => {
-      if (!(await confirmModal(''))) return;
+      if (!(await confirmModal(t('confirm_delete_tx') || 'Are you sure you want to delete this transaction?'))) return;
       try {
         await api.del(`/api/transactions/${t._id}`);
-        showToast('', 'success');
+        showToast(t('tx_deleted_success') || 'Transaction deleted successfully', 'success');
         await loadTx(state.selected._id);
         await load();
       } catch (error) {
-        showToast('', 'error');
+        showToast(t('failed_delete_tx') || 'Failed to delete transaction', 'error');
       }
     });
     const pbtn = tr.querySelector('[data-print]');
@@ -150,7 +150,7 @@ function renderTx() {
       import('./print.js').then((m) => {
         const balance = state.items.find(ci => ci._id === state.selected._id)?.balance ?? 0;
         m.printTx(t, state.selected, balance);
-      }).catch(() => showToast('', 'error'));
+      }).catch(() => showToast(t('print_module_failed') || 'Print module failed to load', 'error'));
     });
     tbody.appendChild(tr);
   });
@@ -182,21 +182,21 @@ function bindModal() {
   document.getElementById('add-receipt-btn').onclick = () => openTxForm('receipt');
   document.getElementById('cust-save').onclick = saveCustomer;
   document.getElementById('cust-delete').onclick = async () => {
-    if (!(await confirmModal(''))) return;
+    if (!(await confirmModal(t('confirm_delete_customer') || 'Are you sure you want to delete this customer?'))) return;
     try {
       await api.del(`/api/customers/${state.selected._id}`);
       modal.classList.add('hidden');
-      showToast('', 'success');
+      showToast(t('customer_deleted_success') || 'Customer deleted successfully', 'success');
       await load();
     } catch (error) {
-      showToast('', 'error');
+      showToast(t('failed_delete_customer') || 'Failed to delete customer', 'error');
     }
   };
   document.getElementById('cust-share').onclick = async () => {
     const url = `${location.origin}/#customer=${state.selected._id}`;
     try { 
       await navigator.clipboard.writeText(url); 
-      showToast('', 'success');
+      showToast(t('link_copied') || 'Customer link copied to clipboard', 'success');
     } catch {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');

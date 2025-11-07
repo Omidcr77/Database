@@ -217,7 +217,7 @@
 
         try {
           await api.post('/api/auth/login', { username, password, remember });
-          showToast('${t('signed_in_success')}', 'success');
+          showToast(t('signed_in_success'), 'success');
           window.location.href = '/';
         } catch (err) {
           const msg = err?.message || t('login_failed');
