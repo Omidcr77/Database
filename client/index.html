@@ -13,7 +13,7 @@
           extend: {
             colors: {
               primary: {
-                50: '#f0f9ff',
+                50:  '#f0f9ff',
                 100: '#e0f2fe',
                 500: '#0ea5e9',
                 600: '#0284c7',
@@ -25,106 +25,98 @@
       }
     </script>
     <style>
-      /* Simple CSS variables for light/dark */
-      :root {
-        --card-bg: #ffffff;
-        --card-border: #e5e7eb; /* gray-200 */
-        --text: #111827;        /* gray-900 */
-        --muted: #6b7280;       /* gray-500 */
-        --input-bg: #ffffff;
-        --input-border: #d1d5db; /* gray-300 */
-        --input-text: #111827;
-        --input-placeholder: #9ca3af; /* gray-400 */
-        --primary-600: #0284c7;
-        --primary-700: #0369a1;
+      :root{
+        --card-bg:#ffffff;
+        --card-border:#e5e7eb;
+        --text:#111827;
+        --muted:#6b7280;
+        --input-bg:#ffffff;
+        --input-border:#d1d5db;
+        --input-text:#111827;
+        --input-placeholder:#9ca3af;
+        --primary-600:#0284c7;
+        --primary-700:#0369a1;
       }
-      html.dark {
-        --card-bg: #1f2937;      /* gray-800 */
-        --card-border: #374151;  /* gray-700 */
-        --text: #f9fafb;         /* gray-50 */
-        --muted: #9ca3af;        /* gray-400 */
-        --input-bg: #1f2937;     /* gray-800 */
-        --input-border: #4b5563; /* gray-600 */
-        --input-text: #e5e7eb;   /* gray-200 */
-        --input-placeholder: #9ca3af; /* gray-400 */
-      }
-
-      .stat-card {
-        padding: 1rem;
-        background-color: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 0.75rem;
-        box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-        transition: box-shadow 200ms ease;
-      }
-      .stat-card:hover { box-shadow: 0 4px 12px rgb(0 0 0 / 0.10); }
-
-      .btn-primary {
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        background: var(--primary-600);
-        color: #fff;
-        font-weight: 500;
-        transition: background-color 200ms ease;
-        border: none;
-      }
-      .btn-primary:hover { background: var(--primary-700); }
-
-      .btn-secondary {
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        font-weight: 500;
-        transition: background-color 200ms ease, border-color 200ms ease;
-        color: var(--text);
+      html.dark{
+        --card-bg:#1f2937;       /* gray-800 */
+        --card-border:#374151;   /* gray-700 */
+        --text:#f9fafb;          /* gray-50 */
+        --muted:#9ca3af;         /* gray-400 */
+        --input-bg:#111827;      /* gray-900 */
+        --input-border:#374151;  /* gray-700 */
+        --input-text:#e5e7eb;    /* gray-200 */
+        --input-placeholder:#9ca3af;
       }
 
-      .nav-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.625rem 1rem;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        color: var(--text);
-        border: 1px solid transparent;
-        transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
-        white-space: nowrap;
+      .stat-card{
+        padding:1rem;
+        background:var(--card-bg);
+        border:1px solid var(--card-border);
+        border-radius:.75rem;
+        box-shadow:0 1px 2px rgb(0 0 0 / .05);
+        transition:box-shadow .2s ease, transform .15s ease;
       }
-      .nav-btn.active { background: var(--primary-600); color: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); }
+      .stat-card:hover{ box-shadow:0 6px 18px rgb(0 0 0 / .12); transform:translateY(-1px); }
 
-      .section-card {
-        background-color: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 0.75rem;
-        padding: 1.25rem;
-        box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+      .btn-primary{
+        padding:.625rem 1rem;
+        border-radius:.5rem;
+        background:var(--primary-600);
+        color:#fff;
+        font-weight:600;
+        border:0;
+        transition:background-color .2s ease, box-shadow .2s ease, transform .05s ease;
+      }
+      .btn-primary:hover{ background:var(--primary-700); }
+      .btn-primary:focus{ outline:none; box-shadow:0 0 0 3px rgb(2 132 199 / .25); }
+      .btn-primary:active{ transform:translateY(1px); }
+
+      .btn-secondary{
+        padding:.625rem 1rem;
+        border-radius:.5rem;
+        background:var(--card-bg);
+        border:1px solid var(--card-border);
+        font-weight:600;
+        color:var(--text);
+        transition:background-color .2s ease, border-color .2s ease;
+      }
+      .btn-secondary:hover{ background:rgba(2,132,199,.05); }
+
+      .nav-btn{
+        display:inline-flex; align-items:center; gap:.5rem;
+        padding:.625rem 1rem; border-radius:.5rem;
+        font-weight:600; color:var(--text);
+        border:1px solid transparent;
+        transition:background-color .2s ease, color .2s ease, border-color .2s ease;
+        white-space:nowrap;
+      }
+      .nav-btn.active{ background:var(--primary-600); color:#fff; box-shadow:0 1px 2px rgb(0 0 0 / .08); }
+
+      .section-card{
+        background:var(--card-bg);
+        border:1px solid var(--card-border);
+        border-radius:.75rem;
+        padding:1.25rem;
+        box-shadow:0 1px 2px rgb(0 0 0 / .05);
       }
 
-      .form-input {
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.5rem;
-        background: var(--input-bg);
-        color: var(--input-text);
-        border: 1px solid var(--input-border);
-        transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease, color 200ms ease;
+      .form-input{
+        width:100%;
+        padding:.6rem .75rem;
+        border-radius:.5rem;
+        background:var(--input-bg);
+        color:var(--input-text);
+        border:1px solid var(--input-border);
+        transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease;
       }
-      select.form-input { padding-right: 2rem; }
-      select.form-input, option { background-color: var(--input-bg); color: var(--input-text); }
-      .form-input::placeholder { color: var(--input-placeholder); }
-      .form-input:focus { outline: none; border-color: var(--primary-600); box-shadow: 0 0 0 3px rgb(2 132 199 / 0.25); }
-      .form-input:disabled { opacity: 0.8; cursor: not-allowed; background: #f3f4f6; color: #6b7280; }
-      html.dark .form-input:disabled { background: #374151; color: #9ca3af; }
+      .form-input::placeholder{ color:var(--input-placeholder); }
+      .form-input:focus{ outline:none; border-color:var(--primary-600); box-shadow:0 0 0 3px rgb(2 132 199 / .25); }
+      .form-input:disabled{ opacity:.85; cursor:not-allowed; background:#f3f4f6; color:#6b7280; }
+      html.dark .form-input:disabled{ background:#374151; color:#9ca3af; }
 
-      .form-label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--text);
-        opacity: 0.9;
-        margin-bottom: 0.25rem;
+      .form-label{
+        display:block; font-size:.875rem; font-weight:600;
+        color:var(--text); opacity:.9; margin-bottom:.35rem;
       }
     </style>
   </head>
@@ -140,7 +132,7 @@
             <h1 class="text-xl font-bold text-gray-800 dark:text-white">Sells & Prefunds DB</h1>
           </div>
           <div class="flex items-center gap-3">
-            <button id="theme-toggle" class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+            <button id="theme-toggle" class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200" aria-label="Toggle theme">
               <i class="fas fa-moon dark:hidden"></i>
               <i class="fas fa-sun hidden dark:block"></i>
             </button>
@@ -149,8 +141,8 @@
               <option value="fa">دری</option>
             </select>
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700">
-              <div class="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-                <i class="fas fa-user text-primary-600 dark:text-primary-400 text-xs"></i>
+              <div class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center">
+                <i class="fas fa-user text-primary-600 text-xs"></i>
               </div>
               <span id="user-display" class="text-sm font-medium"></span>
             </div>
@@ -197,7 +189,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 uppercase tracking-wide">Total Customers</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Customers</div>
                   <div id="stat-customers" class="text-2xl font-bold mt-1">0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
@@ -208,7 +200,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 uppercase tracking-wide">Total Sales</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Sales</div>
                   <div id="stat-salescount" class="text-2xl font-bold mt-1">0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -219,7 +211,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 uppercase tracking-wide">Money Lent</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Money Lent</div>
                   <div id="stat-lent" class="text-2xl font-bold mt-1">$0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
@@ -230,7 +222,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 uppercase tracking-wide">Receivables</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Receivables</div>
                   <div id="stat-receivables" class="text-2xl font-bold mt-1">$0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
@@ -241,7 +233,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 uppercase tracking-wide">Total Profit</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Profit</div>
                   <div id="stat-profit" class="text-2xl font-bold mt-1">$0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
@@ -275,7 +267,7 @@
 
             <div class="flex flex-col sm:flex-row gap-3 mb-6">
               <div class="relative flex-1">
-                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 <input id="customer-search" placeholder="Search customers..." class="form-input pl-10" />
               </div>
               <select id="customer-category" class="form-input w-full sm:w-auto">
@@ -286,7 +278,7 @@
                 <option>Other</option>
               </select>
               <button id="customer-refresh" class="btn-secondary">
-                <i class="fas fa-refresh mr-2"></i> Refresh
+                <i class="fas fa-rotate-right mr-2"></i> Refresh
               </button>
             </div>
 
@@ -352,43 +344,47 @@
 
         <!-- Profile Section -->
         <section id="section-profile" class="section hidden">
-          <div class="max-w-2xl">
+          <div class="max-w-3xl mx-auto">
             <div class="section-card mb-6">
               <div class="font-semibold text-lg mb-4">My Profile</div>
               <div class="space-y-4">
-                <div class="flex items-start gap-4">
-                  <img id="user-avatar-preview" src="" class="w-16 h-16 rounded-full border border-gray-300 dark:border-gray-600 object-cover" alt="avatar" />
-                  <div class="space-y-2">
-                    <div class="flex gap-2 items-center">
-                      <input type="file" id="user-avatar-file" accept="image/png,image/jpeg,image/webp" class="hidden" />
-                      <button id="user-avatar-upload" class="btn-secondary"><i class="fas fa-upload mr-2"></i> Upload Photo</button>
-                      <button id="open-change-password" class="btn-secondary"><i class="fas fa-key mr-2"></i> Change Password</button>
+                <!-- Avatar + actions -->
+                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                  <img id="user-avatar-preview" src="" class="w-20 h-20 sm:w-16 sm:h-16 rounded-full border border-gray-300 dark:border-gray-600 object-cover" alt="avatar" />
+                  <div class="w-full sm:w-auto">
+                    <input type="file" id="user-avatar-file" accept="image/png,image/jpeg,image/webp" class="hidden" />
+                    <div class="flex flex-wrap gap-2">
+                      <button id="user-avatar-upload" class="btn-secondary whitespace-nowrap"><i class="fas fa-upload mr-2"></i> Upload Photo</button>
+                      <button id="open-change-password" class="btn-secondary whitespace-nowrap"><i class="fas fa-key mr-2"></i> Change Password</button>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <label class="form-label">Username</label>
-                  <input id="profile-username" disabled class="form-input bg-gray-100 dark:bg-gray-700" />
+
+                <!-- Form fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="md:col-span-2">
+                    <label class="form-label">Username</label>
+                    <input id="profile-username" disabled class="form-input bg-gray-100 dark:bg-gray-700" />
+                  </div>
+                  <div>
+                    <label class="form-label">Full Name</label>
+                    <input id="profile-name" class="form-input" />
+                  </div>
+                  <div>
+                    <label class="form-label">Phone</label>
+                    <input id="profile-phone" class="form-input" />
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="form-label">Avatar URL</label>
+                    <input id="profile-avatar" class="form-input" />
+                  </div>
                 </div>
-                <div>
-                  <label class="form-label">Full Name</label>
-                  <input id="profile-name" class="form-input" />
-                </div>
-                <div>
-                  <label class="form-label">Phone</label>
-                  <input id="profile-phone" class="form-input" />
-                </div>
-                <div>
-                  <label class="form-label">Avatar URL</label>
-                  <input id="profile-avatar" class="form-input" />
-                </div>
-                <button id="profile-save" class="btn-primary">
+
+                <button id="profile-save" class="btn-primary w-full sm:w-auto">
                   <i class="fas fa-save mr-2"></i> Save Changes
                 </button>
               </div>
             </div>
-
-            
           </div>
         </section>
 
@@ -409,10 +405,11 @@
 
     <!-- Customer Modal -->
     <div id="customer-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+           role="dialog" aria-modal="true" aria-labelledby="customer-modal-title" tabindex="-1">
         <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <div id="customer-modal-title" class="font-semibold text-lg"></div>
-          <button id="customer-modal-close" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+          <div id="customer-modal-title" class="font-semibold text-lg">Customer</div>
+          <button id="customer-modal-close" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200" aria-label="Close modal">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -421,7 +418,7 @@
             <button data-tab="balance" class="tab-btn px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium">Balance</button>
             <button data-tab="profile" class="tab-btn px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-sm font-medium">Profile</button>
           </div>
-          
+
           <div id="tab-balance" class="tab">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
               <div class="text-sm font-medium" data-i18n="transaction_history">Transaction History</div>
@@ -450,7 +447,7 @@
               </table>
             </div>
           </div>
-          
+
           <div id="tab-profile" class="tab hidden">
             <div class="space-y-4">
               <div class="flex items-start gap-4">
@@ -459,7 +456,7 @@
                   <div class="flex gap-2 items-center flex-wrap">
                     <input type="file" id="cust-avatar-file" accept="image/png,image/jpeg,image/webp" class="hidden" />
                     <button id="cust-avatar-upload" class="btn-secondary"><i class="fas fa-upload mr-2"></i> Upload Photo</button>
-                    <span class="text-xs text-gray-500">or paste a URL below</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">or paste a URL below</span>
                   </div>
                   <input id="cust-photo" class="form-input" placeholder="https://..." />
                 </div>
@@ -504,7 +501,7 @@
                 <button id="cust-save" class="btn-primary hidden">
                   <i class="fas fa-save mr-2"></i> Save Changes
                 </button>
-                <button id="cust-delete" class="btn-secondary text-red-600 border-red-200 hover:bg-red-50 hidden">
+                <button id="cust-delete" class="btn-secondary text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20 hidden">
                   <i class="fas fa-trash mr-2"></i> Delete
                 </button>
                 <button id="cust-share" class="btn-secondary">
@@ -513,12 +510,14 @@
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
 
     <!-- Toasts -->
     <div id="toast-container" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
     <!-- PDF generator for printing receipts (jsPDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Jalali datepicker (requires jQuery + persian-date) -->
