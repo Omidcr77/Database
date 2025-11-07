@@ -1,6 +1,6 @@
 import { api } from './api.js';
 import { showToast, confirmModal, formModal } from './ui.js';
-import { formatDate } from './i18n.js';
+import { formatDate, getLang } from './i18n.js';
 import { auth, requireRole } from './auth.js';
 
 let state = {
@@ -213,13 +213,14 @@ function bindModal() {
 async function openTxForm(type) {
   const title = type === 'sale' ? 'Add Sale' : 'Add Receipt';
   const today = new Date().toISOString().slice(0, 10);
+  const lang = getLang();
   const values = await formModal({
     title,
     submitText: 'Add',
     fields: (() => {
       const f = [
         { name: 'amount', label: 'Amount', type: 'number', required: true, step: '0.01', min: 0 },
-        { name: 'date', label: 'Date', type: 'date', required: true, value: today }
+        { name: 'date', label: 'Date', type: 'date', required: true, value: lang === 'fa' ? '' : today }
       ];
       if (type === 'sale') f.push({ name: 'billNumber', label: 'Bill Number', type: 'text', placeholder: 'Optional' });
       if (type === 'receipt') f.push({ name: 'onBehalf', label: 'On Behalf', type: 'text', placeholder: 'Optional (payer name)' });

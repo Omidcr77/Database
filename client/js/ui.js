@@ -1,4 +1,5 @@
 import { api } from './api.js';
+import { getLang } from './i18n.js';
 
 export function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container') || (() => {
@@ -105,6 +106,11 @@ export function formModal({ title = 'Form', submitText = 'Save', fields = [], in
         control = `<select id="${id}" class="${baseCls}">${opts}</select>`;
       } else if (f.type === 'textarea') {
         control = `<textarea id="${id}" rows="3" class="${baseCls}" placeholder="${f.placeholder || ''}">${value}</textarea>`;
+      } else if (f.type === 'date' && getLang() === 'fa') {
+        const altId = `${id}_alt`;
+        control = `
+          <input id="${id}" type="text" class="${baseCls}" placeholder="${f.placeholder || ''}" data-jalali data-alt="#${altId}"/>
+          <input id="${altId}" type="hidden" value="${value || ''}" />`;
       } else if (f.type === 'file') {
         const accept = f.accept ? ` accept="${f.accept}"` : '';
         control = `<input id="${id}" type="file" class="${baseCls}"${accept}/>`;
@@ -138,6 +144,19 @@ export function formModal({ title = 'Form', submitText = 'Save', fields = [], in
       r.readAsDataURL(file);
     });
 
+    // Initialize Jalali pickers if language is fa and plugin is present
+    if (getLang() === 'fa' && window.jQuery && typeof jQuery.fn.persianDatepicker === 'function') {
+      overlay.querySelectorAll('[data-jalali]').forEach((el) => {
+        const alt = el.getAttribute('data-alt');
+        jQuery(el).persianDatepicker({
+          format: 'YYYY/MM/DD',
+          altField: alt || undefined,
+          altFormat: 'YYYY-MM-DD',
+          initialValue: true,
+        });
+      });
+    }
+
     overlay.querySelector('[data-submit]').addEventListener('click', async () => {
       const inputs = overlay.querySelectorAll('input, select, textarea');
       const values = {};
@@ -164,6 +183,18 @@ export function formModal({ title = 'Form', submitText = 'Save', fields = [], in
           } else {
             values[f.name] = '';
           }
+        } else if (f.type === 'date' && getLang() === 'fa') {
+          // Use alt gregorian value if available
+          const altSel = el.getAttribute('data-alt');
+          let v = '';
+          if (altSel) {
+            const altEl = overlay.querySelector(altSel);
+            v = altEl ? altEl.value : '';
+          } else {
+            v = el.value;
+          }
+          if (f.required && !v) invalid = true;
+          values[f.name] = v;
         } else {
           let v = el.value;
           if (f.type === 'number') v = v === '' ? '' : Number(v);
