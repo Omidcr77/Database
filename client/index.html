@@ -144,6 +144,10 @@
               <i class="fas fa-moon dark:hidden"></i>
               <i class="fas fa-sun hidden dark:block"></i>
             </button>
+            <select id="lang-select" class="form-input w-auto py-1 px-2 text-sm">
+              <option value="en">EN</option>
+              <option value="fa">دری</option>
+            </select>
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700">
               <div class="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
                 <i class="fas fa-user text-primary-600 dark:text-primary-400 text-xs"></i>
@@ -151,7 +155,7 @@
               <span id="user-display" class="text-sm font-medium"></span>
             </div>
             <button id="logout-btn" class="btn-secondary text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20">
-              <i class="fas fa-sign-out-alt mr-1"></i> Logout
+              <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="logout">Logout</span>
             </button>
           </div>
         </div>
@@ -163,23 +167,23 @@
           <div class="flex items-center gap-3 overflow-x-auto">
             <button data-section="dashboard" class="nav-btn active">
               <i class="fas fa-chart-bar"></i>
-              <span>Dashboard</span>
+              <span data-i18n="nav_dashboard">Dashboard</span>
             </button>
             <button data-section="customers" class="nav-btn">
               <i class="fas fa-users"></i>
-              <span>Customers</span>
+              <span data-i18n="nav_customers">Customers</span>
             </button>
             <button data-section="reports" class="nav-btn">
               <i class="fas fa-chart-pie"></i>
-              <span>Reports</span>
+              <span data-i18n="nav_reports">Reports</span>
             </button>
             <button data-section="profile" class="nav-btn">
               <i class="fas fa-user-circle"></i>
-              <span>Profile</span>
+              <span data-i18n="nav_profile">Profile</span>
             </button>
             <button data-section="admin" id="admin-tab" class="nav-btn hidden">
               <i class="fas fa-cog"></i>
-              <span>Admin</span>
+              <span data-i18n="nav_admin">Admin</span>
             </button>
           </div>
         </div>
@@ -392,9 +396,9 @@
         <section id="section-admin" class="section hidden">
           <div class="section-card">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
-              <div class="font-semibold text-lg">User Management</div>
+              <div class="font-semibold text-lg" data-i18n="user_management">User Management</div>
               <button id="user-add" class="btn-primary mt-4 sm:mt-0">
-                <i class="fas fa-user-plus mr-2"></i> Add User
+                <i class="fas fa-user-plus mr-2"></i> <span data-i18n="add_user">Add User</span>
               </button>
             </div>
             <div id="users-list" class="space-y-3"></div>
@@ -420,13 +424,13 @@
           
           <div id="tab-balance" class="tab">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-              <div class="text-sm font-medium">Transaction History</div>
+              <div class="text-sm font-medium" data-i18n="transaction_history">Transaction History</div>
               <div class="flex gap-2 mt-2 sm:mt-0">
                 <button id="add-sale-btn" class="px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium hidden">
-                  <i class="fas fa-plus mr-1"></i> Add Sale
+                  <i class="fas fa-plus mr-1"></i> <span data-i18n="add_sale">Add Sale</span>
                 </button>
                 <button id="add-receipt-btn" class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium hidden">
-                  <i class="fas fa-plus mr-1"></i> Add Receipt
+                  <i class="fas fa-plus mr-1"></i> <span data-i18n="add_receipt">Add Receipt</span>
                 </button>
               </div>
             </div>
@@ -434,11 +438,11 @@
               <table class="w-full text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                   <tr class="text-left">
-                    <th class="py-2 px-3 font-medium">Date</th>
-                    <th class="py-2 px-3 font-medium">Type</th>
-                    <th class="py-2 px-3 font-medium">User</th>
-                    <th class="py-2 px-3 font-medium">Amount</th>
-                    <th class="py-2 px-3 font-medium">Description</th>
+                    <th class="py-2 px-3 font-medium" data-i18n="th_date">Date</th>
+                    <th class="py-2 px-3 font-medium" data-i18n="th_type">Type</th>
+                    <th class="py-2 px-3 font-medium" data-i18n="th_user">User</th>
+                    <th class="py-2 px-3 font-medium" data-i18n="th_amount">Amount</th>
+                    <th class="py-2 px-3 font-medium" data-i18n="th_description">Description</th>
                     <th class="py-2 px-3 font-medium"></th>
                   </tr>
                 </thead>

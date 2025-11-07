@@ -1,4 +1,5 @@
 // Requires jsPDF UMD to be loaded on the page (window.jspdf)
+import { formatDateTime } from './i18n.js';
 
 function formatCurrency(n) {
   try {
@@ -46,7 +47,7 @@ export async function printTx(tx, customer, balance) {
   y = line(y, `Customer: ${name}`);
   if (customer.phone) y = line(y, `Phone: ${customer.phone}`);
   y = line(y, `Category: ${category}`);
-  y = line(y, `Date: ${new Date(tx.date).toLocaleString()}`);
+  y = line(y, `Date: ${formatDateTime(tx.date)}`);
   // Exclude user/created-by from printout per request
   y += 2;
 

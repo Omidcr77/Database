@@ -7,9 +7,12 @@ import { initProfile, renderProfile } from './profile.js';
 import { adminPanel } from './admin.js';
 import { initSocket, on } from './socket.js';
 import { showToast, initTheme } from './ui.js';
+import { i18n, setLang as setLangFn } from './i18n.js';
 
 async function init() {
   initTheme();
+  // Initialize language
+  i18n.applyTranslations();
   
   // Enhanced theme toggle with icon switching
   document.getElementById('theme-toggle').onclick = () => {
@@ -29,6 +32,16 @@ async function init() {
   document.getElementById('user-display').textContent = `${auth.currentUser.username} (${auth.currentUser.role})`;
   document.getElementById('logout-btn').onclick = () => auth.logout();
 
+  // Language selector
+  const langSel = document.getElementById('lang-select');
+  if (langSel) {
+    // Default value from localStorage
+    langSel.value = localStorage.getItem('lang') || 'en';
+    langSel.addEventListener('change', () => {
+      setLangFn(langSel.value);
+    });
+  }
+
   // Permissions based UI
   const isAdmin = auth.currentUser.role === 'admin';
   document.getElementById('admin-tab').classList.toggle('hidden', !isAdmin);
@@ -42,11 +55,11 @@ async function init() {
       const sec = btn.dataset.section;
       document.querySelectorAll('.section').forEach((s) => s.classList.add('hidden'));
       document.getElementById('section-' + sec).classList.remove('hidden');
-      if (sec === 'dashboard') dashboard.load();
+      if (sec === 'dashboard') { i18n.applyTranslations(); dashboard.load(); }
       if (sec === 'customers') loadCustomers();
       if (sec === 'reports') {/* nothing */}
-      if (sec === 'profile') renderProfile();
-      if (sec === 'admin') adminPanel.load();
+      if (sec === 'profile') { i18n.applyTranslations(); renderProfile(); }
+      if (sec === 'admin') { i18n.applyTranslations(); adminPanel.load(); }
     });
   });
 

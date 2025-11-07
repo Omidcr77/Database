@@ -1,5 +1,6 @@
 import { api } from './api.js';
 import { showToast, confirmModal, formModal } from './ui.js';
+import { formatDate } from './i18n.js';
 import { auth, requireRole } from './auth.js';
 
 let state = {
@@ -114,7 +115,7 @@ function renderTx() {
         : '');
 
     tr.innerHTML = `
-      <td class="py-3 px-3 text-sm">${(new Date(t.date)).toLocaleDateString()}</td>
+      <td class="py-3 px-3 text-sm">${formatDate(t.date)}</td>
       <td class="py-3 px-3">
         <span class="px-2 py-1 rounded-full text-xs font-medium ${typeClass}">${t.type}</span>
       </td>
