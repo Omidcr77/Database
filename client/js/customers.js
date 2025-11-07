@@ -1,6 +1,6 @@
 import { api } from './api.js';
 import { showToast, confirmModal, formModal } from './ui.js';
-import { formatDate, getLang } from './i18n.js';
+import { formatDate, getLang, t } from './i18n.js';
 import { auth, requireRole } from './auth.js';
 
 let state = {
@@ -31,25 +31,25 @@ function renderGrid() {
              class="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-gray-600" />
         <div class="flex-1 min-w-0">
           <div class="font-semibold text-gray-900 dark:text-white truncate">${c.fullName || (c.firstName + ' ' + c.lastName)}</div>
-          <div class="text-xs text-gray-500 truncate">${c.phone || 'No phone'}</div>
+          <div class="text-xs text-gray-500 truncate">\</div>
           <div class="text-xs mt-1">
             <span class="px-2 py-1 rounded-full ${c.balance >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}">
-              Balance: ${formatCurrency(c.balance)}
+              : 
             </span>
           </div>
         </div>
       </div>
       <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
         <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-          ${c.category || 'Customer'}
+          \
         </span>
         <div class="flex items-center gap-2">
           ${canEdit() ? `
-            <button data-del class="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200" title="Delete">
+            <button data-del class="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200" title="${t('delete')}">
               <i class="fas fa-trash text-xs"></i>
             </button>
           ` : ''}
-          <button data-open class="p-1.5 rounded-lg text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-200" title="Open">
+          <button data-open class="p-1.5 rounded-lg text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-200" title="${t('open')}">
             <i class="fas fa-external-link-alt text-xs"></i>
           </button>
         </div>
@@ -58,13 +58,13 @@ function renderGrid() {
     card.querySelector('[data-open]').addEventListener('click', () => openCustomer(c));
     const delBtn = card.querySelector('[data-del]');
     if (delBtn) delBtn.addEventListener('click', async () => {
-      if (!(await confirmModal('Are you sure you want to delete this customer?'))) return;
+      if (!(await confirmModal(''))) return;
       try {
         await api.del(`/api/customers/${c._id}`);
-        showToast('Customer deleted successfully', 'success');
+        showToast('', 'success');
         await load();
       } catch (error) {
-        showToast('Failed to delete customer', 'error');
+        showToast('', 'error');
       }
     });
     grid.appendChild(card);
@@ -81,8 +81,8 @@ async function loadTx(customerId) {
     state.tx = data.items;
     renderTx();
   } catch (error) {
-    console.error('Failed to load transactions:', error);
-    showToast('Failed to load transactions', 'error');
+    console.error(':', error);
+    showToast('', 'error');
   }
 }
 
@@ -95,7 +95,7 @@ function renderTx() {
     tr.innerHTML = `
       <td colspan="6" class="py-8 text-center text-gray-500 dark:text-gray-400">
         <i class="fas fa-receipt text-3xl mb-2 opacity-50"></i>
-        <div>No transactions found</div>
+        <div></div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -123,11 +123,11 @@ function renderTx() {
       <td class="py-3 px-3 font-medium">${formatCurrency(t.amount)}</td>
       <td class="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">${t.description || '-'}${extraInfo}</td>
       <td class="py-3 px-3 text-right">
-        <button data-print class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 mr-1" title="Print">
+        <button data-print class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 mr-1" title="${t('print')}">
           <i class="fas fa-print text-xs"></i>
         </button>
         ${canEdit() ? `
-          <button data-del class="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200" title="Delete">
+          <button data-del class="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200" title="${t('delete')}">
             <i class="fas fa-trash text-xs"></i>
           </button>
         ` : ''}
@@ -135,14 +135,14 @@ function renderTx() {
     `;
     const btn = tr.querySelector('[data-del]');
     if (btn) btn.addEventListener('click', async () => {
-      if (!(await confirmModal('Are you sure you want to delete this transaction?'))) return;
+      if (!(await confirmModal(''))) return;
       try {
         await api.del(`/api/transactions/${t._id}`);
-        showToast('Transaction deleted successfully', 'success');
+        showToast('', 'success');
         await loadTx(state.selected._id);
         await load();
       } catch (error) {
-        showToast('Failed to delete transaction', 'error');
+        showToast('', 'error');
       }
     });
     const pbtn = tr.querySelector('[data-print]');
@@ -150,7 +150,7 @@ function renderTx() {
       import('./print.js').then((m) => {
         const balance = state.items.find(ci => ci._id === state.selected._id)?.balance ?? 0;
         m.printTx(t, state.selected, balance);
-      }).catch(() => showToast('Print module failed to load', 'error'));
+      }).catch(() => showToast('', 'error'));
     });
     tbody.appendChild(tr);
   });
@@ -182,21 +182,21 @@ function bindModal() {
   document.getElementById('add-receipt-btn').onclick = () => openTxForm('receipt');
   document.getElementById('cust-save').onclick = saveCustomer;
   document.getElementById('cust-delete').onclick = async () => {
-    if (!(await confirmModal('Are you sure you want to delete this customer?'))) return;
+    if (!(await confirmModal(''))) return;
     try {
       await api.del(`/api/customers/${state.selected._id}`);
       modal.classList.add('hidden');
-      showToast('Customer deleted successfully', 'success');
+      showToast('', 'success');
       await load();
     } catch (error) {
-      showToast('Failed to delete customer', 'error');
+      showToast('', 'error');
     }
   };
   document.getElementById('cust-share').onclick = async () => {
     const url = `${location.origin}/#customer=${state.selected._id}`;
     try { 
       await navigator.clipboard.writeText(url); 
-      showToast('Customer link copied to clipboard', 'success');
+      showToast('', 'success');
     } catch {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
@@ -205,26 +205,26 @@ function bindModal() {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      showToast('Customer link copied to clipboard', 'success');
+      showToast('', 'success');
     }
   };
 }
 
 async function openTxForm(type) {
-  const title = type === 'sale' ? 'Add Sale' : 'Add Receipt';
+  const title = type === 'sale' ? '' : '';
   const today = new Date().toISOString().slice(0, 10);
   const lang = getLang();
   const values = await formModal({
     title,
-    submitText: 'Add',
+    submitText: t(''create''),
     fields: (() => {
       const f = [
-        { name: 'amount', label: 'Amount', type: 'number', required: true, step: '0.01', min: 0 },
-        { name: 'date', label: 'Date', type: 'date', required: true, value: lang === 'fa' ? '' : today }
+        { name: 'amount', label: t(''amount_lbl''), type: 'number', required: true, step: '0.01', min: 0 },
+        { name: 'date', label: t(''date_lbl''), type: 'date', required: true, value: lang === 'fa' ? '' : today }
       ];
-      if (type === 'sale') f.push({ name: 'billNumber', label: 'Bill Number', type: 'text', placeholder: 'Optional' });
-      if (type === 'receipt') f.push({ name: 'onBehalf', label: 'On Behalf', type: 'text', placeholder: 'Optional (payer name)' });
-      f.push({ name: 'description', label: 'Description', type: 'text', placeholder: 'Optional' });
+      if (type === 'sale') f.push({ name: 'billNumber', label: t(''bill_no_lbl''), type: 'text', placeholder: t(''optional'') });
+      if (type === 'receipt') f.push({ name: 'onBehalf', label: t(''on_behalf_lbl''), type: 'text', placeholder: t(''optional_payer'') });
+      f.push({ name: t(''note_lbl''), label: t(''note_lbl''), type: 'text', placeholder: t(''optional'') });
       return f;
     })()
   });
@@ -238,11 +238,11 @@ async function openTxForm(type) {
       onBehalf: type === 'receipt' ? (values.onBehalf || '') : undefined,
       date: values.date ? new Date(values.date).toISOString() : new Date().toISOString()
     });
-    showToast('Transaction added successfully', 'success');
+    showToast('', 'success');
     await loadTx(state.selected._id);
     await load();
   } catch (e) {
-    showToast(e.message || 'Failed to add transaction', 'error');
+    showToast(e.message || '', 'error');
   }
 }
 
@@ -275,16 +275,16 @@ async function saveCustomer() {
   
   try {
     await api.patch(`/api/customers/${state.selected._id}`, updates);
-    showToast('Customer updated successfully', 'success');
+    showToast('', 'success');
     await load();
   } catch (error) {
-    showToast('Failed to update customer', 'error');
+    showToast('', 'error');
   }
 }
 
 export async function openCustomer(c) {
   state.selected = c;
-  document.getElementById('customer-modal-title').textContent = `${c.fullName || (c.firstName + ' ' + c.lastName)} — Balance: ${formatCurrency(c.balance)}`;
+  document.getElementById('customer-modal-title').textContent = `${c.fullName || (c.firstName + ' ' + c.lastName)} — : `;
   document.getElementById('customer-modal').classList.remove('hidden');
   
   // Permissions
@@ -307,8 +307,8 @@ export async function load() {
     state.items = data.items;
     renderGrid();
   } catch (error) {
-    console.error('Failed to load customers:', error);
-    showToast('Failed to load customers', 'error');
+    console.error(':', error);
+    showToast('', 'error');
   }
 }
 
@@ -336,24 +336,24 @@ export function initCustomers() {
         document.getElementById('cust-photo').value = res.url;
         const prev = document.getElementById('cust-avatar-preview');
         if (prev) prev.src = res.url;
-        showToast('Photo uploaded', 'success');
+        showToast('', 'success');
       } catch (err) {
-        showToast(err.message || 'Upload failed', 'error');
+        showToast(err.message || '', 'error');
       }
     };
     reader.readAsDataURL(file);
   });
   document.getElementById('add-customer-btn').addEventListener('click', async () => {
     const values = await formModal({
-      title: 'Add Customer',
-      submitText: 'Create',
+      title: t(''add_customer''),
+      submitText: t(''create''),
       fields: [
-        { name: 'firstName', label: 'First Name', type: 'text', required: true },
-        { name: 'lastName', label: 'Last Name', type: 'text', required: true },
-        { name: 'phone', label: 'Phone', type: 'text', placeholder: 'Optional' },
-        { name: 'address', label: 'Address', type: 'text', placeholder: 'Optional' },
-        { name: 'balance', label: 'Total Balance (initial)', type: 'number', step: '0.01' },
-        { name: 'photoUrl', label: 'Profile Photo', type: 'file', accept: 'image/*', upload: true }
+        { name: 'firstName', label: t(''first_name''), type: 'text', required: true },
+        { name: 'lastName', label: t(''last_name''), type: 'text', required: true },
+        { name: t(''phone_lbl''), label: t(''phone_lbl''), type: 'text', placeholder: t(''optional'') },
+        { name: t(''address''), label: t(''address''), type: 'text', placeholder: t(''optional'') },
+        { name: 'balance', label: t(''total_balance_lbl'') + ' (initial)', type: 'number', step: '0.01' },
+        { name: 'photoUrl', label: t(''upload_photo''), type: 'file', accept: 'image/*', upload: true }
       ]
     });
     if (!values) return;
@@ -367,10 +367,10 @@ export function initCustomers() {
         balance: values.balance === '' || values.balance === undefined ? 0 : Number(values.balance)
       };
       await api.post('/api/customers', payload);
-      showToast('Customer added successfully', 'success');
+      showToast('', 'success');
       await load();
     } catch (error) {
-      showToast('Failed to add customer', 'error');
+      showToast('', 'error');
     }
   });
 }

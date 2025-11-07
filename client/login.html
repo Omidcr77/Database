@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en" class="h-full" data-theme="light">
   <head>
     <meta charset="utf-8" />
@@ -54,8 +54,8 @@
           <div class="mx-auto w-16 h-16 rounded-2xl bg-sky-600 flex items-center justify-center mb-4">
             <i class="fas fa-database text-white text-2xl"></i>
           </div>
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Sells & Prefunds DB</h1>
-          <p class="mt-2 text-gray-600 dark:text-gray-400">Please sign in to continue</p>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white" data-i18n="app_title">Sells & Prefunds DB</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400"><span data-i18n="sign_in_title">Please sign in to continue</span></p>
         </div>
 
         <!-- Card -->
@@ -63,18 +63,18 @@
           <!-- Dark mode + brand -->
           <div class="flex items-center justify-between">
             <div class="text-sm text-gray-500 dark:text-gray-400">
-              <span class="font-medium">Welcome back</span>
+              <span class="font-medium"><span data-i18n="welcome_back">Welcome back</span></span>
             </div>
             <button type="button" id="theme-toggle" class="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
               <i class="fa-solid fa-moon hidden dark:inline"></i>
               <i class="fa-regular fa-sun dark:hidden"></i>
-              <span class="hidden sm:inline">Toggle theme</span>
+              <span class="hidden sm:inline"><span data-i18n="toggle_theme">Toggle theme</span></span>
             </button>
           </div>
 
           <div class="space-y-4">
             <div>
-              <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+              <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="username">Username</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i class="fas fa-user text-gray-400"></i>
@@ -86,14 +86,14 @@
                   autocomplete="username"
                   required
                   class="form-input pl-10"
-                  placeholder="yourname"
+                  data-i18n="username" data-i18n-attr="placeholder" placeholder="yourname"
                   aria-invalid="false"
                 />
               </div>
             </div>
 
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="change_password">Password</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i class="fas fa-lock text-gray-400"></i>
@@ -125,9 +125,9 @@
           <div class="flex items-center justify-between">
             <label class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer select-none">
               <input id="remember" type="checkbox" class="rounded border-gray-300 text-sky-600 focus:ring-sky-500">
-              Remember me
+              <span data-i18n="remember_me">Remember me</span>
             </label>
-            <a href="#" class="text-sm text-sky-700 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300">Forgot password?</a>
+            <a href="#" class="text-sm text-sky-700 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300"><span data-i18n="forgot_password">Forgot password?</span></a>
           </div>
 
           <button
@@ -135,7 +135,7 @@
             class="btn-primary group relative w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg bg-sky-600 hover:bg-sky-700 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 text-white font-medium transition"
           >
             <i class="fas fa-sign-in-alt"></i>
-            <span>Sign in</span>
+            <span><span data-i18n="sign_in">Sign in</span>
           </button>
 
           <div class="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -155,6 +155,24 @@
     <script type="module">
       import { api } from './js/api.js';
       import { showToast } from './js/ui.js';
+      import { applyTranslations, setLang, t } from './js/i18n.js';
+
+      // Initialize language selector
+      (function(){
+        try {
+          const header = document.querySelector('.text-center');
+          if (header && !document.getElementById('lang-select')) {
+            const langSel = document.createElement('select');
+            langSel.id = 'lang-select';
+            langSel.className = 'form-input w-auto py-1 px-2 text-sm mb-3';
+            langSel.innerHTML = '<option value="en">EN</option><option value="fa">دری</option>';
+            header.appendChild(langSel);
+            langSel.value = localStorage.getItem('lang') || 'en';
+            langSel.addEventListener('change', () => setLang(langSel.value));
+          }
+          applyTranslations();
+        } catch {}
+      })();
 
       const form = document.getElementById('login-form');
       const formError = document.getElementById('form-error');
@@ -169,14 +187,14 @@
         passwordEl.setAttribute('aria-invalid', 'false');
 
         if (!usernameEl.value.trim()) {
-          formError.textContent = 'Username is required.';
+          formError.textContent = t('username_required');
           formError.classList.remove('hidden');
           usernameEl.setAttribute('aria-invalid', 'true');
           usernameEl.focus();
           return false;
         }
         if (!passwordEl.value) {
-          formError.textContent = 'Password is required.';
+          formError.textContent = t('password_required');
           formError.classList.remove('hidden');
           passwordEl.setAttribute('aria-invalid', 'true');
           passwordEl.focus();
@@ -190,7 +208,7 @@
         if (!validate()) return;
 
         const originalHTML = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span> Signing in...</span>';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span> ' + t('signing_in') + '</span>';
         submitBtn.disabled = true;
 
         const username = usernameEl.value.trim();
@@ -199,10 +217,10 @@
 
         try {
           await api.post('/api/auth/login', { username, password, remember });
-          showToast('Signed in successfully.', 'success');
+          showToast('${t('signed_in_success')}', 'success');
           window.location.href = '/';
         } catch (err) {
-          const msg = err?.message || 'Login failed. Please check your credentials.';
+          const msg = err?.message || t('login_failed');
           formError.textContent = msg;
           formError.classList.remove('hidden');
           showToast(msg, 'error');
@@ -220,7 +238,7 @@
         passwordEl.type = isHidden ? 'text' : 'password';
         eyeOpen.classList.toggle('hidden', isHidden);
         eyeClosed.classList.toggle('hidden', !isHidden);
-        togglePass.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+        togglePass.setAttribute('aria-label', isHidden ? t('hide_password') : t('show_password'));
       });
 
       // Submit on Enter key anywhere in form

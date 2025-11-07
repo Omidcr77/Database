@@ -189,7 +189,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Customers</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide" data-i18n="total_customers">Total Customers</div>
                   <div id="stat-customers" class="text-2xl font-bold mt-1">0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
@@ -200,7 +200,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Sales</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide" data-i18n="total_sales">Total Sales</div>
                   <div id="stat-salescount" class="text-2xl font-bold mt-1">0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -211,7 +211,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Money Lent</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide" data-i18n="money_lent">Money Lent</div>
                   <div id="stat-lent" class="text-2xl font-bold mt-1">$0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
@@ -222,7 +222,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Receivables</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide" data-i18n="receivables">Receivables</div>
                   <div id="stat-receivables" class="text-2xl font-bold mt-1">$0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
@@ -233,7 +233,7 @@
             <div class="stat-card">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Profit</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide" data-i18n="total_profit">Total Profit</div>
                   <div id="stat-profit" class="text-2xl font-bold mt-1">$0</div>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
@@ -245,10 +245,10 @@
 
           <div class="section-card">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-              <div class="font-semibold text-lg">Sales Trend</div>
+            <div class="font-semibold text-lg" data-i18n="sales_trend">Sales Trend</div>
               <select id="trend-range" class="form-input w-auto mt-2 sm:mt-0">
-                <option value="7">Last 7 days</option>
-                <option value="30">Last 30 days</option>
+            <option value="7" data-i18n="last_7_days">Last 7 days</option>
+            <option value="30" data-i18n="last_30_days">Last 30 days</option>
               </select>
             </div>
             <canvas id="trend-canvas" class="w-full h-48"></canvas>
@@ -259,33 +259,33 @@
         <section id="section-customers" class="section hidden">
           <div class="section-card">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
-              <h2 class="text-xl font-bold mb-4 sm:mb-0">Customers</h2>
+              <h2 class="text-xl font-bold mb-4 sm:mb-0" data-i18n="customers_title">Customers</h2>
               <button id="add-customer-btn" class="btn-primary hidden">
-                <i class="fas fa-plus mr-2"></i> Add Customer
+                <i class="fas fa-plus mr-2"></i> <span data-i18n="add_customer">Add Customer</span>
               </button>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3 mb-6">
               <div class="relative flex-1">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input id="customer-search" placeholder="Search customers..." class="form-input pl-10" />
+                <input id="customer-search" class="form-input pl-10" data-i18n="search_customers" data-i18n-attr="placeholder" placeholder="Search customers..." />
               </div>
               <select id="customer-category" class="form-input w-full sm:w-auto">
-                <option value="">All Categories</option>
-                <option>Customer</option>
-                <option>Investor</option>
-                <option>Employee</option>
-                <option>Other</option>
+                <option value="" data-i18n="all_categories">All Categories</option>
+                <option data-i18n="category_customer">Customer</option>
+                <option data-i18n="category_investor">Investor</option>
+                <option data-i18n="category_employee">Employee</option>
+                <option data-i18n="category_other">Other</option>
               </select>
               <button id="customer-refresh" class="btn-secondary">
-                <i class="fas fa-rotate-right mr-2"></i> Refresh
+                <i class="fas fa-rotate-right mr-2"></i> <span data-i18n="refresh">Refresh</span>
               </button>
             </div>
 
             <div id="customer-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             <div id="customer-empty" class="text-center py-10 hidden">
               <i class="fas fa-users text-4xl text-gray-300 mb-3"></i>
-              <p class="text-gray-500">No customers found.</p>
+              <p class="text-gray-500" data-i18n="no_customers">No customers found.</p>
             </div>
           </div>
         </section>
@@ -294,48 +294,48 @@
         <section id="section-reports" class="section hidden">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="section-card">
-              <div class="font-semibold text-lg mb-4">Export Data</div>
+              <div class="font-semibold text-lg mb-4" data-i18n="export_data">Export Data</div>
               <div class="space-y-4">
                 <div>
-                  <label class="form-label">Export Type</label>
+                  <label class="form-label" data-i18n="export_type">Export Type</label>
                   <select id="export-type" class="form-input">
-                    <option value="customers">Customers</option>
-                    <option value="sales">Transactions</option>
-                    <option value="profitloss">Profit/Loss</option>
+                    <option value="customers" data-i18n="export_customers">Customers</option>
+                    <option value="sales" data-i18n="export_transactions">Transactions</option>
+                    <option value="profitloss" data-i18n="export_profitloss">Profit/Loss</option>
                   </select>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                   <div>
-                    <label class="form-label">From Date</label>
+                    <label class="form-label" data-i18n="from_date">From Date</label>
                     <input type="date" id="export-from" class="form-input" />
                   </div>
                   <div>
-                    <label class="form-label">To Date</label>
+                    <label class="form-label" data-i18n="to_date">To Date</label>
                     <input type="date" id="export-to" class="form-input" />
                   </div>
                 </div>
                 <button id="export-btn" class="btn-primary w-full">
-                  <i class="fas fa-download mr-2"></i> Download CSV
+                  <i class="fas fa-download mr-2"></i> <span data-i18n="download_csv">Download CSV</span>
                 </button>
               </div>
             </div>
 
             <div class="section-card">
-              <div class="font-semibold text-lg mb-4">Import Data</div>
+              <div class="font-semibold text-lg mb-4" data-i18n="import_data">Import Data</div>
               <div class="space-y-4">
                 <div>
-                  <label class="form-label">Import Type</label>
+                  <label class="form-label" data-i18n="import_type">Import Type</label>
                   <select id="import-type" class="form-input">
-                    <option value="customers">Customers</option>
-                    <option value="sales">Transactions</option>
+                    <option value="customers" data-i18n="export_customers">Customers</option>
+                    <option value="sales" data-i18n="export_transactions">Transactions</option>
                   </select>
                 </div>
                 <div>
-                  <label class="form-label">CSV File</label>
+                  <label class="form-label" data-i18n="csv_file">CSV File</label>
                   <input type="file" id="import-file" accept=".csv" class="form-input p-1.5" />
                 </div>
                 <button id="import-btn" class="btn-primary w-full">
-                  <i class="fas fa-upload mr-2"></i> Upload CSV
+                  <i class="fas fa-upload mr-2"></i> <span data-i18n="upload_csv">Upload CSV</span>
                 </button>
               </div>
             </div>
@@ -346,7 +346,7 @@
         <section id="section-profile" class="section hidden">
           <div class="max-w-3xl mx-auto">
             <div class="section-card mb-6">
-              <div class="font-semibold text-lg mb-4">My Profile</div>
+              <div class="font-semibold text-lg mb-4" data-i18n="my_profile">My Profile</div>
               <div class="space-y-4">
                 <!-- Avatar + actions -->
                 <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
@@ -354,8 +354,8 @@
                   <div class="w-full sm:w-auto">
                     <input type="file" id="user-avatar-file" accept="image/png,image/jpeg,image/webp" class="hidden" />
                     <div class="flex flex-wrap gap-2">
-                      <button id="user-avatar-upload" class="btn-secondary whitespace-nowrap"><i class="fas fa-upload mr-2"></i> Upload Photo</button>
-                      <button id="open-change-password" class="btn-secondary whitespace-nowrap"><i class="fas fa-key mr-2"></i> Change Password</button>
+                      <button id="user-avatar-upload" class="btn-secondary whitespace-nowrap"><i class="fas fa-upload mr-2"></i> <span data-i18n="upload_photo">Upload Photo</span></button>
+                      <button id="open-change-password" class="btn-secondary whitespace-nowrap"><i class="fas fa-key mr-2"></i> <span data-i18n="change_password">Change Password</span></button>
                     </div>
                   </div>
                 </div>
@@ -363,25 +363,25 @@
                 <!-- Form fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="md:col-span-2">
-                    <label class="form-label">Username</label>
+                    <label class="form-label" data-i18n="username">Username</label>
                     <input id="profile-username" disabled class="form-input bg-gray-100 dark:bg-gray-700" />
                   </div>
                   <div>
-                    <label class="form-label">Full Name</label>
+                    <label class="form-label" data-i18n="full_name">Full Name</label>
                     <input id="profile-name" class="form-input" />
                   </div>
                   <div>
-                    <label class="form-label">Phone</label>
+                    <label class="form-label" data-i18n="phone_lbl">Phone</label>
                     <input id="profile-phone" class="form-input" />
                   </div>
                   <div class="md:col-span-2">
-                    <label class="form-label">Avatar URL</label>
+                    <label class="form-label" data-i18n="avatar_url">Avatar URL</label>
                     <input id="profile-avatar" class="form-input" />
                   </div>
                 </div>
 
                 <button id="profile-save" class="btn-primary w-full sm:w-auto">
-                  <i class="fas fa-save mr-2"></i> Save Changes
+                  <i class="fas fa-save mr-2"></i> <span data-i18n="save_changes">Save Changes</span>
                 </button>
               </div>
             </div>
@@ -408,15 +408,15 @@
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
            role="dialog" aria-modal="true" aria-labelledby="customer-modal-title" tabindex="-1">
         <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <div id="customer-modal-title" class="font-semibold text-lg">Customer</div>
+          <div id="customer-modal-title" class="font-semibold text-lg" data-i18n="customer_lbl">Customer</div>
           <button id="customer-modal-close" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200" aria-label="Close modal">
             <i class="fas fa-times"></i>
           </button>
         </div>
         <div class="flex-1 overflow-auto p-4">
           <div class="flex gap-2 mb-4">
-            <button data-tab="balance" class="tab-btn px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium">Balance</button>
-            <button data-tab="profile" class="tab-btn px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-sm font-medium">Profile</button>
+            <button data-tab="balance" class="tab-btn px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium" data-i18n="balance_word">Balance</button>
+            <button data-tab="profile" class="tab-btn px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-sm font-medium" data-i18n="nav_profile">Profile</button>
           </div>
 
           <div id="tab-balance" class="tab">
@@ -455,7 +455,7 @@
                 <div class="space-y-2 flex-1">
                   <div class="flex gap-2 items-center flex-wrap">
                     <input type="file" id="cust-avatar-file" accept="image/png,image/jpeg,image/webp" class="hidden" />
-                    <button id="cust-avatar-upload" class="btn-secondary"><i class="fas fa-upload mr-2"></i> Upload Photo</button>
+                    <button id="cust-avatar-upload" class="btn-secondary"><i class="fas fa-upload mr-2"></i> <span data-i18n="upload_photo">Upload Photo</span></button>
                     <span class="text-xs text-gray-500 dark:text-gray-400">or paste a URL below</span>
                   </div>
                   <input id="cust-photo" class="form-input" placeholder="https://..." />
@@ -464,48 +464,48 @@
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="form-label">First Name</label>
+                  <label class="form-label" data-i18n="first_name">First Name</label>
                   <input id="cust-first" class="form-input" />
                 </div>
                 <div>
-                  <label class="form-label">Last Name</label>
+                  <label class="form-label" data-i18n="last_name">Last Name</label>
                   <input id="cust-last" class="form-input" />
                 </div>
               </div>
               <div>
-                <label class="form-label">ID Number</label>
+                <label class="form-label" data-i18n="id_number">ID Number</label>
                 <input id="cust-idnum" class="form-input" />
               </div>
               <div>
-                <label class="form-label">Phone</label>
+                <label class="form-label" data-i18n="phone_lbl">Phone</label>
                 <input id="cust-phone" class="form-input" />
               </div>
               <div>
-                <label class="form-label">Address</label>
+                <label class="form-label" data-i18n="address">Address</label>
                 <input id="cust-address" class="form-input" />
               </div>
               <div>
-                <label class="form-label">Category</label>
+                <label class="form-label" data-i18n="category_lbl">Category</label>
                 <select id="cust-category" class="form-input">
-                  <option>Customer</option>
-                  <option>Investor</option>
-                  <option>Employee</option>
-                  <option>Other</option>
+                  <option data-i18n="category_customer">Customer</option>
+                  <option data-i18n="category_investor">Investor</option>
+                  <option data-i18n="category_employee">Employee</option>
+                  <option data-i18n="category_other">Other</option>
                 </select>
               </div>
               <div>
-                <label class="form-label">Notes</label>
+                <label class="form-label" data-i18n="notes">Notes</label>
                 <textarea id="cust-note" class="form-input h-24"></textarea>
               </div>
               <div class="flex gap-2 pt-2">
                 <button id="cust-save" class="btn-primary hidden">
-                  <i class="fas fa-save mr-2"></i> Save Changes
+                  <i class="fas fa-save mr-2"></i> <span data-i18n="save_changes">Save Changes</span>
                 </button>
                 <button id="cust-delete" class="btn-secondary text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20 hidden">
-                  <i class="fas fa-trash mr-2"></i> Delete
+                  <i class="fas fa-trash mr-2"></i> <span data-i18n="delete">Delete</span>
                 </button>
                 <button id="cust-share" class="btn-secondary">
-                  <i class="fas fa-share-alt mr-2"></i> Share
+                  <i class="fas fa-share-alt mr-2"></i> <span data-i18n="share">Share</span>
                 </button>
               </div>
             </div>
