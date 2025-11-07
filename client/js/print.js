@@ -47,7 +47,7 @@ export async function printTx(tx, customer, balance) {
   if (customer.phone) y = line(y, `Phone: ${customer.phone}`);
   y = line(y, `Category: ${category}`);
   y = line(y, `Date: ${new Date(tx.date).toLocaleString()}`);
-  if (tx.createdBy && tx.createdBy.username) y = line(y, `User: ${tx.createdBy.username}`);
+  // Exclude user/created-by from printout per request
   y += 2;
 
   // Transaction details
@@ -67,4 +67,3 @@ export async function printTx(tx, customer, balance) {
   const file = `${tx.type}_${fnameSafe}_${new Date(tx.date).toISOString().slice(0,10)}.pdf`;
   doc.save(file);
 }
-
