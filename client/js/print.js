@@ -30,13 +30,21 @@ export async function printTx(tx, customer, balance) {
   async function ensurePersianFont(doc) {
     if (getLang() !== 'fa') return 'helvetica';
     try {
-      const tryUrls = [
+      const tryRegular = [
         'https://cdn.jsdelivr.net/npm/vazirmatn@33.003/fonts/ttf/Vazirmatn-Regular.ttf',
         'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/Vazirmatn-Regular.ttf',
         'https://cdn.jsdelivr.net/npm/vazirmatn@latest/fonts/ttf/Vazirmatn-Regular.ttf'
       ];
-      let ok = false;
-      for (const url of tryUrls) {
+      const tryBold = [
+        'https://cdn.jsdelivr.net/npm/vazirmatn@33.003/fonts/ttf/Vazirmatn-Bold.ttf',
+        'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/Vazirmatn-Bold.ttf',
+        'https://cdn.jsdelivr.net/npm/vazirmatn@latest/fonts/ttf/Vazirmatn-Bold.ttf'
+      ];
+
+      let haveRegular = false;
+      let haveBold = false;
+
+      for (const url of tryRegular) {
         try {
           const resp = await fetch(url, { mode: 'cors' });
           if (!resp.ok) continue;
@@ -44,10 +52,23 @@ export async function printTx(tx, customer, balance) {
           const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
           doc.addFileToVFS('Vazirmatn-Regular.ttf', b64);
           doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'normal');
-          ok = true; break;
+          haveRegular = true; break;
         } catch { /* try next */ }
       }
-      if (ok) return 'Vazirmatn';
+
+      for (const url of tryBold) {
+        try {
+          const resp = await fetch(url, { mode: 'cors' });
+          if (!resp.ok) continue;
+          const buf = await resp.arrayBuffer();
+          const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+          doc.addFileToVFS('Vazirmatn-Bold.ttf', b64);
+          doc.addFont('Vazirmatn-Bold.ttf', 'Vazirmatn', 'bold');
+          haveBold = true; break;
+        } catch { /* try next */ }
+      }
+
+      if (haveRegular) return 'Vazirmatn';
     } catch { /* ignore */ }
     return 'helvetica';
   }
