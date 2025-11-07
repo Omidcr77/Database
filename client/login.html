@@ -14,22 +14,20 @@
         --input-border: #d1d5db;
         --input-text: #111827;
         --input-placeholder: #9ca3af;
-        --primary-600: #0284c7;
-        --primary-700: #0369a1;
       }
       html.dark {
-        --card-bg: #1f2937;
-        --card-border: #374151;
-        --input-bg: #1f2937;
-        --input-border: #4b5563;
-        --input-text: #e5e7eb;
+        --card-bg: #1f2937;      /* gray-800 */
+        --card-border: #374151;  /* gray-700 */
+        --input-bg: #111827;     /* gray-900 */
+        --input-border: #374151; /* gray-700 */
+        --input-text: #e5e7eb;   /* gray-200 */
         --input-placeholder: #9ca3af;
       }
       .login-card {
         background: var(--card-bg);
         border: 1px solid var(--card-border);
         border-radius: 1rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,.15);
+        box-shadow: 0 10px 25px rgba(0,0,0,.12);
         padding: 2rem;
         width: 100%;
         max-width: 28rem;
@@ -41,24 +39,39 @@
         background: var(--input-bg);
         color: var(--input-text);
         border: 1px solid var(--input-border);
-        transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease, color 200ms ease;
+        transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease;
       }
       .form-input::placeholder { color: var(--input-placeholder); }
-      .form-input:focus { outline: none; border-color: var(--primary-600); box-shadow: 0 0 0 3px rgb(2 132 199 / 0.25); }
+      .form-input:focus { outline: none; border-color: #0284c7; box-shadow: 0 0 0 3px rgb(2 132 199 / 0.25); }
+      .btn-primary[disabled] { opacity: .7; cursor: not-allowed; }
     </style>
   </head>
-  <body class="h-full bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800">
+  <body class="h-full bg-gradient-to-br from-sky-50 to-blue-100 dark:from-gray-900 dark:to-gray-800">
     <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div class="w-full max-w-md space-y-8">
+        <!-- Header -->
         <div class="text-center">
-          <div class="mx-auto w-16 h-16 rounded-2xl bg-primary-600 flex items-center justify-center mb-4">
+          <div class="mx-auto w-16 h-16 rounded-2xl bg-sky-600 flex items-center justify-center mb-4">
             <i class="fas fa-database text-white text-2xl"></i>
           </div>
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Sells & Prefunds DB</h2>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Sells & Prefunds DB</h1>
           <p class="mt-2 text-gray-600 dark:text-gray-400">Please sign in to continue</p>
         </div>
-        
-        <form id="login-form" class="login-card mt-8 space-y-6">
+
+        <!-- Card -->
+        <form id="login-form" class="login-card mt-6 space-y-6" novalidate>
+          <!-- Dark mode + brand -->
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              <span class="font-medium">Welcome back</span>
+            </div>
+            <button type="button" id="theme-toggle" class="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+              <i class="fa-solid fa-moon hidden dark:inline"></i>
+              <i class="fa-regular fa-sun dark:hidden"></i>
+              <span class="hidden sm:inline">Toggle theme</span>
+            </button>
+          </div>
+
           <div class="space-y-4">
             <div>
               <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
@@ -66,32 +79,70 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i class="fas fa-user text-gray-400"></i>
                 </div>
-                <input id="username" name="username" type="text" autocomplete="username" required 
-                       class="form-input pl-10" placeholder="yourname" />
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  autocomplete="username"
+                  required
+                  class="form-input pl-10"
+                  placeholder="yourname"
+                  aria-invalid="false"
+                />
               </div>
             </div>
+
             <div>
               <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i class="fas fa-lock text-gray-400"></i>
                 </div>
-                <input id="password" name="password" type="password" autocomplete="current-password" required 
-                       class="form-input pl-10" placeholder="Your password" />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  class="form-input pl-10 pr-10"
+                  placeholder="Your password"
+                  aria-invalid="false"
+                />
+                <button
+                  type="button"
+                  id="toggle-pass"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  aria-label="Show password">
+                  <i class="fa-regular fa-eye" id="eye-open"></i>
+                  <i class="fa-regular fa-eye-slash hidden" id="eye-closed"></i>
+                </button>
               </div>
             </div>
+
+            <p id="form-error" class="hidden text-sm text-red-600"></p>
           </div>
 
-          <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg bg-primary-600 hover:bg-primary-700 focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 text-white font-medium transition-colors duration-200">
-            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <i class="fas fa-sign-in-alt text-primary-300 group-hover:text-primary-400"></i>
-            </span>
-            Sign in
+          <div class="flex items-center justify-between">
+            <label class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer select-none">
+              <input id="remember" type="checkbox" class="rounded border-gray-300 text-sky-600 focus:ring-sky-500">
+              Remember me
+            </label>
+            <a href="#" class="text-sm text-sky-700 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300">Forgot password?</a>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-primary group relative w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg bg-sky-600 hover:bg-sky-700 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 text-white font-medium transition"
+          >
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Sign in</span>
           </button>
-          
+
           <div class="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              Default admin: <span class="font-medium">admin</span> / <span class="font-medium">Admin123!</span>
+              Default admin:
+              <span class="font-medium">admin</span> /
+              <span class="font-medium">Admin123!</span>
             </p>
           </div>
         </form>
@@ -104,34 +155,93 @@
     <script type="module">
       import { api } from './js/api.js';
       import { showToast } from './js/ui.js';
-      
-      document.getElementById('login-form').addEventListener('submit', async (e) => {
+
+      const form = document.getElementById('login-form');
+      const formError = document.getElementById('form-error');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const usernameEl = document.getElementById('username');
+      const passwordEl = document.getElementById('password');
+
+      // Basic client-side validation
+      function validate() {
+        formError.classList.add('hidden');
+        usernameEl.setAttribute('aria-invalid', 'false');
+        passwordEl.setAttribute('aria-invalid', 'false');
+
+        if (!usernameEl.value.trim()) {
+          formError.textContent = 'Username is required.';
+          formError.classList.remove('hidden');
+          usernameEl.setAttribute('aria-invalid', 'true');
+          usernameEl.focus();
+          return false;
+        }
+        if (!passwordEl.value) {
+          formError.textContent = 'Password is required.';
+          formError.classList.remove('hidden');
+          passwordEl.setAttribute('aria-invalid', 'true');
+          passwordEl.focus();
+          return false;
+        }
+        return true;
+      }
+
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        
-        // Show loading state
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Signing in...';
+        if (!validate()) return;
+
+        const originalHTML = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span> Signing in...</span>';
         submitBtn.disabled = true;
-        
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value;
-        
+
+        const username = usernameEl.value.trim();
+        const password = passwordEl.value;
+        const remember = document.getElementById('remember').checked;
+
         try {
-          await api.post('/api/auth/login', { username, password });
+          await api.post('/api/auth/login', { username, password, remember });
+          showToast('Signed in successfully.', 'success');
           window.location.href = '/';
         } catch (err) {
-          showToast(err.message || 'Login failed. Please check your credentials.', 'error');
-          submitBtn.innerHTML = originalText;
+          const msg = err?.message || 'Login failed. Please check your credentials.';
+          formError.textContent = msg;
+          formError.classList.remove('hidden');
+          showToast(msg, 'error');
+          submitBtn.innerHTML = originalHTML;
           submitBtn.disabled = false;
         }
       });
-      
-      // Initialize theme
+
+      // Password visibility toggle
+      const togglePass = document.getElementById('toggle-pass');
+      const eyeOpen = document.getElementById('eye-open');
+      const eyeClosed = document.getElementById('eye-closed');
+      togglePass.addEventListener('click', () => {
+        const isHidden = passwordEl.type === 'password';
+        passwordEl.type = isHidden ? 'text' : 'password';
+        eyeOpen.classList.toggle('hidden', isHidden);
+        eyeClosed.classList.toggle('hidden', !isHidden);
+        togglePass.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      });
+
+      // Submit on Enter key anywhere in form
+      form.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (document.activeElement === usernameEl || document.activeElement === passwordEl)) {
+          form.requestSubmit();
+        }
+      });
+
+      // Theme init & toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      const applyTheme = (t) => {
+        document.documentElement.classList.toggle('dark', t === 'dark');
+        localStorage.setItem('theme', t);
+      };
       const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      }
+      applyTheme(savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+      themeToggle.addEventListener('click', () => {
+        const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+        applyTheme(next);
+      });
     </script>
   </body>
 </html>
