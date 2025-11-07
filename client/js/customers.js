@@ -92,7 +92,7 @@ function renderTx() {
   if (state.tx.length === 0) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td colspan="5" class="py-8 text-center text-gray-500 dark:text-gray-400">
+      <td colspan="6" class="py-8 text-center text-gray-500 dark:text-gray-400">
         <i class="fas fa-receipt text-3xl mb-2 opacity-50"></i>
         <div>No transactions found</div>
       </td>
@@ -118,9 +118,13 @@ function renderTx() {
       <td class="py-3 px-3">
         <span class="px-2 py-1 rounded-full text-xs font-medium ${typeClass}">${t.type}</span>
       </td>
+      <td class="py-3 px-3 text-sm text-gray-700 dark:text-gray-300">${t.createdBy && t.createdBy.username ? t.createdBy.username : '-'}</td>
       <td class="py-3 px-3 font-medium">${formatCurrency(t.amount)}</td>
       <td class="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">${t.description || '-'}${extraInfo}</td>
       <td class="py-3 px-3 text-right">
+        <button data-print class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 mr-1" title="Print">
+          <i class="fas fa-print text-xs"></i>
+        </button>
         ${canEdit() ? `
           <button data-del class="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200" title="Delete">
             <i class="fas fa-trash text-xs"></i>
@@ -139,6 +143,13 @@ function renderTx() {
       } catch (error) {
         showToast('Failed to delete transaction', 'error');
       }
+    });
+    const pbtn = tr.querySelector('[data-print]');
+    if (pbtn) pbtn.addEventListener('click', () => {
+      import('./print.js').then((m) => {
+        const balance = state.items.find(ci => ci._id === state.selected._id)?.balance ?? 0;
+        m.printTx(t, state.selected, balance);
+      }).catch(() => showToast('Print module failed to load', 'error'));
     });
     tbody.appendChild(tr);
   });

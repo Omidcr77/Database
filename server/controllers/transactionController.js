@@ -10,7 +10,9 @@ export async function listTransactions(req, res) {
   if (from || to) q.date = {};
   if (from) q.date.$gte = new Date(from);
   if (to) q.date.$lte = new Date(to);
-  const items = await Transaction.find(q).sort({ date: -1, createdAt: -1 });
+  const items = await Transaction.find(q)
+    .sort({ date: -1, createdAt: -1 })
+    .populate('createdBy', 'username');
   res.json({ items });
 }
 
