@@ -348,12 +348,23 @@ export function initCustomers() {
       fields: [
         { name: 'firstName', label: 'First Name', type: 'text', required: true },
         { name: 'lastName', label: 'Last Name', type: 'text', required: true },
-        { name: 'phone', label: 'Phone', type: 'text', placeholder: 'Optional' }
+        { name: 'phone', label: 'Phone', type: 'text', placeholder: 'Optional' },
+        { name: 'address', label: 'Address', type: 'text', placeholder: 'Optional' },
+        { name: 'balance', label: 'Total Balance (initial)', type: 'number', step: '0.01' },
+        { name: 'photoUrl', label: 'Profile Photo', type: 'file', accept: 'image/*', upload: true }
       ]
     });
     if (!values) return;
     try {
-      await api.post('/api/customers', values);
+      const payload = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        phone: values.phone || '',
+        address: values.address || '',
+        photoUrl: values.photoUrl || '',
+        balance: values.balance === '' || values.balance === undefined ? 0 : Number(values.balance)
+      };
+      await api.post('/api/customers', payload);
       showToast('Customer added successfully', 'success');
       await load();
     } catch (error) {

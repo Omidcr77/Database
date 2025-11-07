@@ -1,3 +1,5 @@
+import { api } from './api.js';
+
 export function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container') || (() => {
     const c = document.createElement('div');
@@ -103,6 +105,9 @@ export function formModal({ title = 'Form', submitText = 'Save', fields = [], in
         control = `<select id="${id}" class="${baseCls}">${opts}</select>`;
       } else if (f.type === 'textarea') {
         control = `<textarea id="${id}" rows="3" class="${baseCls}" placeholder="${f.placeholder || ''}">${value}</textarea>`;
+      } else if (f.type === 'file') {
+        const accept = f.accept ? ` accept="${f.accept}"` : '';
+        control = `<input id="${id}" type="file" class="${baseCls}"${accept}/>`;
       } else {
         const extra = f.step ? ` step="${f.step}"` : '';
         const min = f.min !== undefined ? ` min="${f.min}"` : '';
@@ -126,16 +131,46 @@ export function formModal({ title = 'Form', submitText = 'Save', fields = [], in
     overlay.addEventListener('click', (e) => { if (e.target === overlay) { cleanup(); resolve(null); } });
     overlay.querySelector('[data-close]').addEventListener('click', () => { cleanup(); resolve(null); });
     overlay.querySelector('[data-cancel]').addEventListener('click', () => { cleanup(); resolve(null); });
-    overlay.querySelector('[data-submit]').addEventListener('click', () => {
+    const readAsDataURL = (file) => new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+
+    overlay.querySelector('[data-submit]').addEventListener('click', async () => {
       const inputs = overlay.querySelectorAll('input, select, textarea');
       const values = {};
       let invalid = false;
-      fields.forEach((f, i) => {
-        let v = inputs[i].value;
-        if (f.type === 'number') v = v === '' ? '' : Number(v);
-        if (f.required && (v === '' || v === undefined || v === null || Number.isNaN(v))) invalid = true;
-        values[f.name] = v;
-      });
+      for (let i = 0; i < fields.length; i++) {
+        const f = fields[i];
+        const el = inputs[i];
+        if (f.type === 'file') {
+          const file = el.files && el.files[0];
+          if (f.required && !file) invalid = true;
+          if (file && f.upload) {
+            try {
+              const dataUrl = await readAsDataURL(file);
+              let res;
+              try { res = await api.post('/api/uploads/image', { data: dataUrl }); }
+              catch (err1) {
+                try { res = await api.post('/api/upload-image', { data: dataUrl }); }
+                catch (err2) { res = await api.post('/uploads/image', { data: dataUrl }); }
+              }
+              values[f.name] = res.url;
+            } catch (e) {
+              invalid = true;
+            }
+          } else {
+            values[f.name] = '';
+          }
+        } else {
+          let v = el.value;
+          if (f.type === 'number') v = v === '' ? '' : Number(v);
+          if (f.required && (v === '' || v === undefined || v === null || Number.isNaN(v))) invalid = true;
+          values[f.name] = v;
+        }
+      }
       if (invalid) return;
       cleanup();
       resolve(values);
