@@ -6,7 +6,7 @@ Quick Start
 
 - Requirements: Node 18+, MongoDB running locally (default `mongodb://localhost:27017`).
 - Steps:
-  1. Copy `.env.example` to `.env` and adjust if needed.
+  1. Copy `.env.example` to `.env` and adjust if needed. Do not commit real credentials.
   2. Install deps: `npm install`
   3. Seed DB: `npm run seed`
   4. Start server: `npm start`
@@ -55,7 +55,7 @@ Frontend
 
 Notes
 
-- Cookie is `httpOnly`, `sameSite=lax`; `secure` only in production.
+- Cookie is `httpOnly`, `sameSite=lax`; `secure` only in production. "Remember me" issues a persistent cookie (7 days); otherwise it is a session cookie.
 - Simple rate limiting on `/api/auth/*`.
 - Customer `balance` is maintained as sum(sales) - sum(receipts).
 - Profit (very basic): `receipts - sales`.

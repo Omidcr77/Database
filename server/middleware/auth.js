@@ -13,13 +13,24 @@ export function optionalAuth(req, _res, next) {
   next();
 }
 
-export function requireAuth(req, res, next) {
+export async function requireAuth(req, res, next) {
   const token = req.cookies?.token;
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = payload;
-    if (payload.isBlocked) return res.status(401).json({ message: 'Account blocked' });
+    // Always refresh from DB so block/unblock takes effect immediately
+    const user = await User.findById(payload._id).lean();
+    if (!user) return res.status(401).json({ message: 'Unauthorized' });
+    if (user.isBlocked) return res.status(401).json({ message: 'Account blocked' });
+    req.user = {
+      _id: user._id.toString(),
+      username: user.username,
+      name: user.name || '',
+      phone: user.phone || '',
+      avatarUrl: user.avatarUrl || '',
+      role: user.role,
+      isBlocked: user.isBlocked
+    };
     next();
   } catch (e) {
     return res.status(401).json({ message: 'Unauthorized' });

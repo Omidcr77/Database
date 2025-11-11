@@ -42,15 +42,18 @@ export async function listCustomers(req, res) {
 
 export async function getCustomer(req, res) {
   const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid customer id' });
   const customer = await Customer.findById(id);
   if (!customer) return res.status(404).json({ message: 'Customer not found' });
   res.json({ customer });
 }
 
 export async function createCustomer(req, res) {
-  const data = req.body;
+  const data = req.body || {};
   if (!data.firstName || !data.lastName) return res.status(400).json({ message: 'First/last name required' });
   data.createdBy = req.user._id;
+  // Never accept client-provided balance; it's derived
+  if ('balance' in data) delete data.balance;
   const customer = await Customer.create(data);
   realtime.emitCustomer('created', customer);
   realtime.emitStatsUpdated();
@@ -59,7 +62,11 @@ export async function createCustomer(req, res) {
 
 export async function updateCustomer(req, res) {
   const { id } = req.params;
-  const updates = { ...req.body };
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid customer id' });
+  const src = { ...(req.body || {}) };
+  const allowed = ['firstName','lastName','idNumber','phone','address','photoUrl','category','note'];
+  const updates = {};
+  for (const k of allowed) if (k in src) updates[k] = src[k];
   const customer = await Customer.findByIdAndUpdate(id, updates, { new: true });
   if (!customer) return res.status(404).json({ message: 'Customer not found' });
   realtime.emitCustomer('updated', customer);
@@ -68,6 +75,7 @@ export async function updateCustomer(req, res) {
 
 export async function deleteCustomer(req, res) {
   const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid customer id' });
   const customer = await Customer.findByIdAndDelete(id);
   if (!customer) return res.status(404).json({ message: 'Customer not found' });
   await Transaction.deleteMany({ customerId: id });

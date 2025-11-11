@@ -1,15 +1,25 @@
 import Transaction from '../models/Transaction.js';
 import { recalcBalance } from './customerController.js';
 import { realtime } from '../sockets.js';
+import mongoose from 'mongoose';
 
 export async function listTransactions(req, res) {
   const { id } = req.params; // customer id
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid customer id' });
   const { from, to, type } = req.query;
   const q = { customerId: id };
   if (type && ['sale', 'receipt'].includes(type)) q.type = type;
-  if (from || to) q.date = {};
-  if (from) q.date.$gte = new Date(from);
-  if (to) q.date.$lte = new Date(to);
+  if (from || to) {
+    q.date = {};
+    if (from) {
+      const d = new Date(from);
+      if (!isNaN(d)) q.date.$gte = d;
+    }
+    if (to) {
+      const d = new Date(to);
+      if (!isNaN(d)) q.date.$lte = d;
+    }
+  }
   const items = await Transaction.find(q)
     .sort({ date: -1, createdAt: -1 })
     .populate('createdBy', 'username');
@@ -18,13 +28,15 @@ export async function listTransactions(req, res) {
 
 export async function createTransaction(req, res) {
   const { id } = req.params; // customer id
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid customer id' });
   const { type, amount, date, description, billNumber, onBehalf } = req.body;
   if (!['sale', 'receipt'].includes(type)) return res.status(400).json({ message: 'Invalid type' });
-  if (typeof amount !== 'number') return res.status(400).json({ message: 'Amount required' });
+  const amt = typeof amount === 'number' ? amount : parseFloat(amount);
+  if (!Number.isFinite(amt) || amt < 0) return res.status(400).json({ message: 'Invalid amount' });
   const tx = await Transaction.create({
     customerId: id,
     type,
-    amount,
+    amount: amt,
     date: date ? new Date(date) : new Date(),
     description: description || '',
     billNumber: type === 'sale' ? (billNumber || '') : '',
@@ -39,6 +51,7 @@ export async function createTransaction(req, res) {
 
 export async function deleteTransaction(req, res) {
   const { id } = req.params; // transaction id
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid transaction id' });
   const tx = await Transaction.findByIdAndDelete(id);
   if (!tx) return res.status(404).json({ message: 'Transaction not found' });
   const balance = await recalcBalance(tx.customerId);

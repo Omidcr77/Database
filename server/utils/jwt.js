@@ -13,12 +13,13 @@ export function signToken(user) {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
-export function cookieOptions() {
+export function cookieOptions(opts = {}) {
   const isProd = process.env.NODE_ENV === 'production';
-  return {
+  const remember = opts.remember !== undefined ? !!opts.remember : true;
+  const base = {
     httpOnly: true,
     sameSite: 'lax',
     secure: isProd,
-    maxAge: 7 * 24 * 60 * 60 * 1000
   };
+  return remember ? { ...base, maxAge: 7 * 24 * 60 * 60 * 1000 } : base;
 }

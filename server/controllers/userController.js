@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import { signToken, cookieOptions } from '../utils/jwt.js';
 import { realtime } from '../sockets.js';
+import mongoose from 'mongoose';
 
 export async function listUsers(req, res) {
   const users = await User.find().select('-password');
@@ -18,6 +19,7 @@ export async function createUser(req, res) {
 
 export async function patchUser(req, res) {
   const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid user id' });
   const updates = { ...req.body };
 
   // Non-admins can only update themselves
@@ -49,6 +51,7 @@ export async function patchUser(req, res) {
 
 export async function changePassword(req, res) {
   const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid user id' });
   const { currentPassword, newPassword } = req.body;
   if (!newPassword) return res.status(400).json({ message: 'New password required' });
   const user = await User.findById(id);
@@ -74,15 +77,21 @@ export async function changePassword(req, res) {
 
 export async function toggleBlock(req, res) {
   const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid user id' });
   const user = await User.findById(id);
   if (!user) return res.status(404).json({ message: 'User not found' });
   user.isBlocked = !user.isBlocked;
   await user.save();
+  // If current user just blocked themselves, clear cookie
+  if (req.user && req.user._id === user._id.toString() && user.isBlocked) {
+    res.clearCookie('token');
+  }
   res.json({ user: { _id: user._id, username: user.username, role: user.role, name: user.name, phone: user.phone, avatarUrl: user.avatarUrl, isBlocked: user.isBlocked } });
 }
 
 export async function deleteUser(req, res) {
   const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid user id' });
   if (req.user._id === id) return res.status(400).json({ message: 'Cannot delete yourself' });
   const user = await User.findByIdAndDelete(id);
   if (!user) return res.status(404).json({ message: 'User not found' });

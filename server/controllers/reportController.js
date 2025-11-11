@@ -1,26 +1,34 @@
 import Customer from '../models/Customer.js';
 import Transaction from '../models/Transaction.js';
 import { toCSV, fromCSV } from '../utils/csv.js';
+import { recalcBalance } from './customerController.js';
 
 export async function exportCSV(req, res) {
   const { type, from, to } = req.query;
   const fromDate = from ? new Date(from) : null;
   const toDate = to ? new Date(to) : null;
 
+  const safe = (v) => {
+    if (v == null) return '';
+    const s = String(v);
+    // Prevent CSV formula injection when opened in Excel
+    return /^[=+\-@]/.test(s) ? `'${s}` : s;
+  };
+
   if (type === 'customers') {
     const customers = await Customer.find().lean();
     const records = customers.map((c) => ({
       id: c._id.toString(),
-      firstName: c.firstName,
-      lastName: c.lastName,
-      fullName: `${c.firstName} ${c.lastName}`,
-      phone: c.phone || '',
-      address: c.address || '',
-      category: c.category,
-      idNumber: c.idNumber || '',
+      firstName: safe(c.firstName),
+      lastName: safe(c.lastName),
+      fullName: safe(`${c.firstName} ${c.lastName}`),
+      phone: safe(c.phone || ''),
+      address: safe(c.address || ''),
+      category: safe(c.category),
+      idNumber: safe(c.idNumber || ''),
       balance: c.balance,
-      photoUrl: c.photoUrl || '',
-      note: c.note || '',
+      photoUrl: safe(c.photoUrl || ''),
+      note: safe(c.note || ''),
       createdAt: c.createdAt?.toISOString() || ''
     }));
     const csv = toCSV(records);
@@ -40,9 +48,9 @@ export async function exportCSV(req, res) {
       customerId: t.customerId.toString(),
       type: t.type,
       amount: t.amount,
-      description: t.description || '',
-      billNumber: t.billNumber || '',
-      onBehalf: t.onBehalf || '',
+      description: safe(t.description || ''),
+      billNumber: safe(t.billNumber || ''),
+      onBehalf: safe(t.onBehalf || ''),
       date: t.date?.toISOString() || '',
       createdBy: t.createdBy?.toString() || ''
     }));
@@ -86,6 +94,7 @@ export async function importCSV(req, res) {
   if (type === 'customers') {
     // Upsert by id or fullName
     let created = 0;
+    let updated = 0;
     for (const r of rows) {
       const data = {
         firstName: r.firstName || (r.fullName ? r.fullName.split(' ')[0] : ''),
@@ -97,36 +106,47 @@ export async function importCSV(req, res) {
         photoUrl: r.photoUrl || '',
         note: r.note || ''
       };
-      const existing = r.id ? await Customer.findById(r.id).catch(() => null) : null;
-      if (existing) {
-        await Customer.findByIdAndUpdate(existing._id, data);
-      } else if (data.firstName && data.lastName) {
-        await Customer.create({ ...data, createdBy: req.user._id });
-        created++;
-      }
+      try {
+        const existing = r.id ? await Customer.findById(r.id).catch(() => null) : null;
+        if (existing) {
+          await Customer.findByIdAndUpdate(existing._id, data);
+          updated++;
+        } else if (data.firstName && data.lastName) {
+          await Customer.create({ ...data, createdBy: req.user._id });
+          created++;
+        }
+      } catch (_e) { /* skip bad row */ }
     }
-    return res.json({ message: 'Customers imported', created });
+    return res.json({ message: 'Customers imported', created, updated });
   }
 
   if (type === 'sales') {
     let created = 0;
+    const affected = new Set();
     for (const r of rows) {
-      if (!r.customerId || !r.type || !r.amount) continue;
-      const amount = Number(r.amount);
-      if (!(amount >= 0)) continue;
-      await Transaction.create({
-        customerId: r.customerId,
-        type: r.type === 'receipt' ? 'receipt' : 'sale',
-        amount,
-        description: r.description || '',
-        billNumber: r.billNumber || '',
-        onBehalf: r.onBehalf || '',
-        date: r.date ? new Date(r.date) : new Date(),
-        createdBy: req.user._id
-      });
-      created++;
+      try {
+        if (!r.customerId || !r.type || !r.amount) continue;
+        const amount = Number(r.amount);
+        if (!(amount >= 0) || !['sale', 'receipt'].includes(r.type)) continue;
+        await Transaction.create({
+          customerId: r.customerId,
+          type: r.type === 'receipt' ? 'receipt' : 'sale',
+          amount,
+          description: r.description || '',
+          billNumber: r.billNumber || '',
+          onBehalf: r.onBehalf || '',
+          date: r.date ? new Date(r.date) : new Date(),
+          createdBy: req.user._id
+        });
+        created++;
+        affected.add(String(r.customerId));
+      } catch (_e) { /* skip bad row */ }
     }
-    return res.json({ message: 'Transactions imported', created });
+    // Recalc balances for affected customers and emit stats
+    for (const cid of affected) {
+      try { await recalcBalance(cid); } catch {}
+    }
+    return res.json({ message: 'Transactions imported', created, affected: affected.size });
   }
 
   res.status(400).json({ message: 'Invalid type' });

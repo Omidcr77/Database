@@ -1,6 +1,6 @@
 import { api } from './api.js';
 import { requireRole } from './auth.js';
-import { showToast, formModal } from './ui.js';
+import { showToast, formModal, escapeHtml } from './ui.js';
 import { t } from './i18n.js';
 
 export const adminPanel = {
@@ -12,16 +12,19 @@ export const adminPanel = {
     data.users.forEach((u) => {
       const div = document.createElement('div');
       div.className = 'p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex justify-between items-center';
+      const uname = escapeHtml(u.username);
+      const fname = escapeHtml(u.name || '');
+      const urole = escapeHtml(u.role);
       div.innerHTML = `
         <div>
-          <div class="font-semibold">${u.username} ${u.isBlocked ? '<span class=\'text-xs text-red-600\'>(' + t('blocked') + ')</span>' : ''}</div>
-          <div class="text-xs text-gray-500">${u.name || ''} • ${u.role}</div>
+          <div class="font-semibold">${uname} ${u.isBlocked ? '<span class=\'text-xs text-red-600\'>(' + t('blocked') + ')</span>' : ''}</div>
+          <div class="text-xs text-gray-500">${fname} • ${urole}</div>
         </div>
         <div class="flex gap-2 items-center">
           <select data-role class="form-input text-xs w-28 p-1">
-            <option ${u.role==='viewer'?'selected':''}>${t('role_viewer')}</option>
-            <option ${u.role==='manager'?'selected':''}>${t('role_manager')}</option>
-            <option ${u.role==='admin'?'selected':''}>${t('role_admin')}</option>
+            <option value="viewer" ${u.role==='viewer'?'selected':''}>${t('role_viewer')}</option>
+            <option value="manager" ${u.role==='manager'?'selected':''}>${t('role_manager')}</option>
+            <option value="admin" ${u.role==='admin'?'selected':''}>${t('role_admin')}</option>
           </select>
           <button data-block class="px-2 py-1 text-xs rounded ${u.isBlocked ? 'bg-green-600' : 'bg-yellow-600'} text-white">${u.isBlocked ? t('unblock') : t('block')}</button>
           <button data-del class="px-2 py-1 text-xs rounded bg-red-600 text-white">${t('delete')}</button>

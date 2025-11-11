@@ -1,6 +1,16 @@
 import { api } from './api.js';
 import { getLang } from './i18n.js';
 
+export function escapeHtml(value) {
+  const s = String(value ?? '');
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container') || (() => {
     const c = document.createElement('div');

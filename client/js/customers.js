@@ -1,5 +1,5 @@
 import { api } from './api.js';
-import { showToast, confirmModal, formModal } from './ui.js';
+import { showToast, confirmModal, formModal, escapeHtml } from './ui.js';
 import { formatDate, getLang, t } from './i18n.js';
 import { auth, requireRole } from './auth.js';
 
@@ -25,13 +25,17 @@ function renderGrid() {
   state.items.forEach((c) => {
     const card = document.createElement('div');
     card.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all duration-200 hover:shadow-md';
+    const fullName = escapeHtml(c.fullName || (c.firstName + ' ' + c.lastName));
+    const safePhone = escapeHtml(c.phone || t('no_phone'));
+    const safeCategory = escapeHtml(c.category || t('category_customer'));
+    const safePhoto = escapeHtml(c.photoUrl || 'https://api.dicebear.com/7.x/identicon/svg?seed=' + encodeURIComponent(c.fullName || (c.firstName + ' ' + c.lastName)));
     card.innerHTML = `
       <div class="flex items-center gap-3 mb-3">
-        <img src="${c.photoUrl || 'https://api.dicebear.com/7.x/identicon/svg?seed=' + encodeURIComponent(c.fullName || (c.firstName + ' ' + c.lastName))}" 
+        <img src="${safePhoto}" 
              class="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-gray-600" />
         <div class="flex-1 min-w-0">
-          <div class="font-semibold text-gray-900 dark:text-white truncate">${c.fullName || (c.firstName + ' ' + c.lastName)}</div>
-          <div class="text-xs text-gray-500 truncate">${c.phone || t('no_phone')}</div>
+          <div class="font-semibold text-gray-900 dark:text-white truncate">${fullName}</div>
+          <div class="text-xs text-gray-500 truncate">${safePhone}</div>
           <div class="text-xs mt-1">
             <span class="px-2 py-1 rounded-full ${c.balance >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}">
               ${t('balance_word')}: ${formatCurrency(c.balance)}
@@ -41,7 +45,7 @@ function renderGrid() {
       </div>
       <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
         <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-          ${c.category || t('category_customer')}
+          ${safeCategory}
         </span>
         <div class="flex items-center gap-2">
           ${canEdit() ? `
@@ -102,26 +106,30 @@ function renderTx() {
     return;
   }
   
-  state.tx.forEach((t) => {
+  state.tx.forEach((tx) => {
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150';
-    const typeClass = t.type === 'sale' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 
+    const typeClass = tx.type === 'sale' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 
                      'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-    
-    const extraInfo = (t.type === 'sale' && t.billNumber)
-      ? ` <span class="text-xs text-gray-500 dark:text-gray-400">#${t.billNumber}</span>`
-      : (t.type === 'receipt' && t.onBehalf
-        ? ` <span class=\"text-xs text-gray-500 dark:text-gray-400\">(on behalf: ${t.onBehalf})</span>`
+    const safeBill = escapeHtml(tx.billNumber || '');
+    const safeOnBehalf = escapeHtml(tx.onBehalf || '');
+    const safeDesc = escapeHtml(tx.description || '-');
+    const safeUser = escapeHtml(tx.createdBy && tx.createdBy.username ? tx.createdBy.username : '-');
+
+    const extraInfo = (tx.type === 'sale' && tx.billNumber)
+      ? ` <span class="text-xs text-gray-500 dark:text-gray-400">#${safeBill}</span>`
+      : (tx.type === 'receipt' && tx.onBehalf
+        ? ` <span class=\"text-xs text-gray-500 dark:text-gray-400\">(on behalf: ${safeOnBehalf})</span>`
         : '');
 
     tr.innerHTML = `
-      <td class="py-3 px-3 text-sm">${formatDate(t.date)}</td>
+      <td class="py-3 px-3 text-sm">${formatDate(tx.date)}</td>
       <td class="py-3 px-3">
-        <span class="px-2 py-1 rounded-full text-xs font-medium ${typeClass}">${t.type}</span>
+        <span class="px-2 py-1 rounded-full text-xs font-medium ${typeClass}">${tx.type}</span>
       </td>
-      <td class="py-3 px-3 text-sm text-gray-700 dark:text-gray-300">${t.createdBy && t.createdBy.username ? t.createdBy.username : '-'}</td>
-      <td class="py-3 px-3 font-medium">${formatCurrency(t.amount)}</td>
-      <td class="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">${t.description || '-'}${extraInfo}</td>
+      <td class="py-3 px-3 text-sm text-gray-700 dark:text-gray-300">${safeUser}</td>
+      <td class="py-3 px-3 font-medium">${formatCurrency(tx.amount)}</td>
+      <td class="py-3 px-3 text-sm text-gray-600 dark:text-gray-400">${safeDesc}${extraInfo}</td>
       <td class="py-3 px-3 text-right">
         <button data-print class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 mr-1" title="${t('print')}">
           <i class="fas fa-print text-xs"></i>
@@ -137,7 +145,7 @@ function renderTx() {
     if (btn) btn.addEventListener('click', async () => {
       if (!(await confirmModal(t('confirm_delete_tx') || 'Are you sure you want to delete this transaction?'))) return;
       try {
-        await api.del(`/api/transactions/${t._id}`);
+        await api.del(`/api/transactions/${tx._id}`);
         showToast(t('tx_deleted_success') || 'Transaction deleted successfully', 'success');
         await loadTx(state.selected._id);
         await load();
@@ -149,7 +157,7 @@ function renderTx() {
     if (pbtn) pbtn.addEventListener('click', () => {
       import('./print.js').then((m) => {
         const balance = state.items.find(ci => ci._id === state.selected._id)?.balance ?? 0;
-        m.printTx(t, state.selected, balance);
+        m.printTx(tx, state.selected, balance);
       }).catch(() => showToast(t('print_module_failed') || 'Print module failed to load', 'error'));
     });
     tbody.appendChild(tr);
@@ -216,15 +224,15 @@ async function openTxForm(type) {
   const lang = getLang();
   const values = await formModal({
     title,
-    submitText: t(''create''),
+    submitText: t('create'),
     fields: (() => {
       const f = [
-        { name: 'amount', label: t(''amount_lbl''), type: 'number', required: true, step: '0.01', min: 0 },
-        { name: 'date', label: t(''date_lbl''), type: 'date', required: true, value: lang === 'fa' ? '' : today }
+        { name: 'amount', label: t('amount_lbl'), type: 'number', required: true, step: '0.01', min: 0 },
+        { name: 'date', label: t('date_lbl'), type: 'date', required: true, value: lang === 'fa' ? '' : today }
       ];
-      if (type === 'sale') f.push({ name: 'billNumber', label: t(''bill_no_lbl''), type: 'text', placeholder: t(''optional'') });
-      if (type === 'receipt') f.push({ name: 'onBehalf', label: t(''on_behalf_lbl''), type: 'text', placeholder: t(''optional_payer'') });
-      f.push({ name: t(''note_lbl''), label: t(''note_lbl''), type: 'text', placeholder: t(''optional'') });
+      if (type === 'sale') f.push({ name: 'billNumber', label: t('bill_no_lbl'), type: 'text', placeholder: t('optional') });
+      if (type === 'receipt') f.push({ name: 'onBehalf', label: t('on_behalf_lbl'), type: 'text', placeholder: t('optional_payer') });
+      f.push({ name: 'description', label: t('note_lbl'), type: 'text', placeholder: t('optional') });
       return f;
     })()
   });
@@ -284,7 +292,7 @@ async function saveCustomer() {
 
 export async function openCustomer(c) {
   state.selected = c;
-  document.getElementById('customer-modal-title').textContent = `${c.fullName || (c.firstName + ' ' + c.lastName)} — : `;
+  document.getElementById('customer-modal-title').textContent = `${c.fullName || (c.firstName + ' ' + c.lastName)}`;
   document.getElementById('customer-modal').classList.remove('hidden');
   
   // Permissions
@@ -345,15 +353,14 @@ export function initCustomers() {
   });
   document.getElementById('add-customer-btn').addEventListener('click', async () => {
     const values = await formModal({
-      title: t(''add_customer''),
-      submitText: t(''create''),
+      title: t('add_customer'),
+      submitText: t('create'),
       fields: [
-        { name: 'firstName', label: t(''first_name''), type: 'text', required: true },
-        { name: 'lastName', label: t(''last_name''), type: 'text', required: true },
-        { name: t(''phone_lbl''), label: t(''phone_lbl''), type: 'text', placeholder: t(''optional'') },
-        { name: t(''address''), label: t(''address''), type: 'text', placeholder: t(''optional'') },
-        { name: 'balance', label: t(''total_balance_lbl'') + ' (initial)', type: 'number', step: '0.01' },
-        { name: 'photoUrl', label: t(''upload_photo''), type: 'file', accept: 'image/*', upload: true }
+        { name: 'firstName', label: t('first_name'), type: 'text', required: true },
+        { name: 'lastName', label: t('last_name'), type: 'text', required: true },
+        { name: 'phone', label: t('phone_lbl'), type: 'text', placeholder: t('optional') },
+        { name: 'address', label: t('address'), type: 'text', placeholder: t('optional') },
+        { name: 'photoUrl', label: t('upload_photo'), type: 'file', accept: 'image/*', upload: true }
       ]
     });
     if (!values) return;
@@ -364,7 +371,7 @@ export function initCustomers() {
         phone: values.phone || '',
         address: values.address || '',
         photoUrl: values.photoUrl || '',
-        balance: values.balance === '' || values.balance === undefined ? 0 : Number(values.balance)
+        
       };
       await api.post('/api/customers', payload);
       showToast('', 'success');
