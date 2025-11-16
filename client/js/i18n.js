@@ -88,6 +88,11 @@ const dictionaries = {
     optional_payer: 'Optional (payer name)',
     no_phone: 'No phone',
     balance_word: 'Balance',
+    opening_balance: 'Opening Balance',
+    balance_direction: 'Balance Direction',
+    they_owe: 'They owe us',
+    we_owe: 'We owe them',
+    opening_date: 'Opening Date',
     sign_in_title: 'Please sign in to continue',
     welcome_back: 'Welcome back',
     toggle_theme: 'Toggle theme',
@@ -206,6 +211,17 @@ const dictionaries = {
     show_password: 'نمایش رمز',
   }
 };
+
+// Inject Dari translations for opening balance feature
+try {
+  if (dictionaries && dictionaries.fa) {
+    dictionaries.fa.opening_balance = 'بیلانس ابتدایی';
+    dictionaries.fa.balance_direction = 'جهت بیلانس';
+    dictionaries.fa.they_owe = 'به ما مقروض اند';
+    dictionaries.fa.we_owe = 'ما به آنها مقروضیم';
+    dictionaries.fa.opening_date = 'تاریخ آغاز';
+  }
+} catch {}
 
 let current = localStorage.getItem('lang') || 'en';
 

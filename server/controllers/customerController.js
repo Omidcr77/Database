@@ -49,15 +49,47 @@ export async function getCustomer(req, res) {
 }
 
 export async function createCustomer(req, res) {
-  const data = req.body || {};
-  if (!data.firstName || !data.lastName) return res.status(400).json({ message: 'First/last name required' });
-  data.createdBy = req.user._id;
+  const src = req.body || {};
+  if (!src.firstName || !src.lastName) return res.status(400).json({ message: 'First/last name required' });
+
+  // Extract optional opening balance inputs (do not persist on customer document)
+  const openingBalanceRaw = src.openingBalance;
+  const openingDirection = src.openingDirection; // 'they_owe' | 'we_owe'
+  const openingDate = src.openingDate;
+
+  const data = { ...src, createdBy: req.user._id };
   // Never accept client-provided balance; it's derived
-  if ('balance' in data) delete data.balance;
+  delete data.balance;
+  delete data.openingBalance;
+  delete data.openingDirection;
+  delete data.openingDate;
+
   const customer = await Customer.create(data);
-  realtime.emitCustomer('created', customer);
+
+  // Handle optional opening balance by recording a first transaction
+  let createdOpeningTx = null;
+  const amt = typeof openingBalanceRaw === 'number' ? openingBalanceRaw : parseFloat(openingBalanceRaw);
+  if (Number.isFinite(amt) && amt > 0) {
+    const dir = openingDirection === 'we_owe' ? 'we_owe' : 'they_owe';
+    const type = dir === 'they_owe' ? 'sale' : 'receipt';
+    createdOpeningTx = await Transaction.create({
+      customerId: customer._id,
+      type,
+      amount: amt,
+      description: 'Opening Balance',
+      billNumber: type === 'sale' ? '' : undefined,
+      onBehalf: type === 'receipt' ? '' : undefined,
+      createdBy: req.user._id,
+      date: openingDate ? new Date(openingDate) : new Date()
+    });
+    await recalcBalance(customer._id);
+  }
+
+  // Re-fetch to include computed balance
+  const fresh = await Customer.findById(customer._id);
+  realtime.emitCustomer('created', fresh);
   realtime.emitStatsUpdated();
-  res.status(201).json({ customer });
+  res.status(201).json({ customer: fresh, openingTransaction: createdOpeningTx || undefined, balance: fresh.balance });
 }
 
 export async function updateCustomer(req, res) {

@@ -352,6 +352,8 @@ export function initCustomers() {
     reader.readAsDataURL(file);
   });
   document.getElementById('add-customer-btn').addEventListener('click', async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const lang = getLang();
     const values = await formModal({
       title: t('add_customer'),
       submitText: t('create'),
@@ -360,7 +362,13 @@ export function initCustomers() {
         { name: 'lastName', label: t('last_name'), type: 'text', required: true },
         { name: 'phone', label: t('phone_lbl'), type: 'text', placeholder: t('optional') },
         { name: 'address', label: t('address'), type: 'text', placeholder: t('optional') },
-        { name: 'photoUrl', label: t('upload_photo'), type: 'file', accept: 'image/*', upload: true }
+        { name: 'photoUrl', label: t('upload_photo'), type: 'file', accept: 'image/*', upload: true },
+        { name: 'openingBalance', label: t('opening_balance'), type: 'number', step: '0.01', min: 0, placeholder: t('optional') },
+        { name: 'openingDirection', label: t('balance_direction'), type: 'select', options: [
+          { value: 'they_owe', label: t('they_owe') },
+          { value: 'we_owe', label: t('we_owe') }
+        ], value: 'they_owe' },
+        { name: 'openingDate', label: t('opening_date'), type: 'date', value: lang === 'fa' ? '' : today }
       ]
     });
     if (!values) return;
@@ -371,7 +379,12 @@ export function initCustomers() {
         phone: values.phone || '',
         address: values.address || '',
         photoUrl: values.photoUrl || '',
-        
+        // Optional opening balance data handled by backend
+        ...(values.openingBalance && Number(values.openingBalance) > 0 ? {
+          openingBalance: Number(values.openingBalance),
+          openingDirection: values.openingDirection || 'they_owe',
+          openingDate: values.openingDate ? new Date(values.openingDate).toISOString() : undefined
+        } : {})
       };
       await api.post('/api/customers', payload);
       showToast('', 'success');
