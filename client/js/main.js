@@ -46,6 +46,14 @@ async function init() {
   const isAdmin = auth.currentUser.role === 'admin';
   document.getElementById('admin-tab').classList.toggle('hidden', !isAdmin);
   document.getElementById('add-customer-btn').classList.toggle('hidden', !(isAdmin || auth.currentUser.role === 'manager'));
+  const fab = document.getElementById('fab-add');
+  if (fab) {
+    fab.classList.toggle('hidden', !(isAdmin || auth.currentUser.role === 'manager'));
+    fab.addEventListener('click', () => {
+      const addBtn = document.getElementById('add-customer-btn');
+      if (addBtn && !addBtn.classList.contains('hidden')) addBtn.click();
+    });
+  }
 
   // Enhanced navigation with icons
   document.querySelectorAll('.nav-btn').forEach((btn) => {

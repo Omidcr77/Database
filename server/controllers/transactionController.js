@@ -33,11 +33,13 @@ export async function createTransaction(req, res) {
   if (!['sale', 'receipt'].includes(type)) return res.status(400).json({ message: 'Invalid type' });
   const amt = typeof amount === 'number' ? amount : parseFloat(amount);
   if (!Number.isFinite(amt) || amt < 0) return res.status(400).json({ message: 'Invalid amount' });
+  const parsedDate = date ? new Date(date) : new Date();
+  const safeDate = isNaN(parsedDate) ? new Date() : parsedDate;
   const tx = await Transaction.create({
     customerId: id,
     type,
     amount: amt,
-    date: date ? new Date(date) : new Date(),
+    date: safeDate,
     description: description || '',
     billNumber: type === 'sale' ? (billNumber || '') : '',
     onBehalf: type === 'receipt' ? (onBehalf || '') : '',

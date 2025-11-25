@@ -230,6 +230,7 @@ export function setLang(lang) {
   localStorage.setItem('lang', current);
   // Toggle direction for Dari (RTL)
   document.documentElement.setAttribute('dir', current === 'fa' ? 'rtl' : 'ltr');
+  document.body.classList.toggle('rtl', current === 'fa');
   applyTranslations();
 }
 
@@ -269,3 +270,4 @@ export const i18n = { t, setLang, getLang, applyTranslations, formatDate, format
 
 // Initialize direction on module load
 document.documentElement.setAttribute('dir', current === 'fa' ? 'rtl' : 'ltr');
+document.body?.classList.toggle('rtl', current === 'fa');

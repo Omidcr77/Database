@@ -203,12 +203,20 @@ export function formModal({ title = 'Form', submitText = 'Save', fields = [], in
           } else {
             v = el.value;
           }
+          // If alt is empty but visible value exists (Jalali), keep it and allow submit
+          if (f.required && !v && el.value) {
+            v = el.value;
+          }
           if (f.required && !v) invalid = true;
           values[f.name] = v;
         } else {
           let v = el.value;
-          if (f.type === 'number') v = v === '' ? '' : Number(v);
-          if (f.required && (v === '' || v === undefined || v === null || Number.isNaN(v))) invalid = true;
+          if (f.type === 'number') {
+            // Keep raw string to allow localized digits; caller will parse
+            if (f.required && (v === '' || v === undefined || v === null)) invalid = true;
+          } else if (f.required && (v === '' || v === undefined || v === null)) {
+            invalid = true;
+          }
           values[f.name] = v;
         }
       }

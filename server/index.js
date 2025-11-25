@@ -18,6 +18,7 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import { uploadImage } from './controllers/uploadController.js';
 import { requireAuth } from './middleware/auth.js';
 import { attachRealtime } from './sockets.js';
+import { errorResponder } from './middleware/errors.js';
 
 dotenv.config();
 
@@ -78,19 +79,13 @@ app.use('/api', (req, res) => {
   res.status(404).json({ message: 'Not Found' });
 });
 
-// Error handler
-app.use((err, req, res, _next) => {
-  console.error(err);
-  if (req.path.startsWith('/api')) {
-    return res.status(500).json({ message: 'Internal Server Error' });
-  }
-  res.status(500).send('Server error');
-});
-
 // Fallback to index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'index.html'));
 });
+
+// Error handler
+app.use(errorResponder);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

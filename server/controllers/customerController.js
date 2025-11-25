@@ -110,7 +110,8 @@ export async function deleteCustomer(req, res) {
   if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid customer id' });
   const customer = await Customer.findByIdAndDelete(id);
   if (!customer) return res.status(404).json({ message: 'Customer not found' });
-  await Transaction.deleteMany({ customerId: id });
+  // Remove all associated transactions (sales/receipts) for full cleanup
+  await Transaction.deleteMany({ customerId: new mongoose.Types.ObjectId(id) });
   realtime.emitCustomer('deleted', { _id: id });
   realtime.emitStatsUpdated();
   res.json({ message: 'Deleted' });
